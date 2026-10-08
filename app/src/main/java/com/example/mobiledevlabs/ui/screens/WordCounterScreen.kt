@@ -54,6 +54,15 @@ fun WordCounterScreen(modifier: Modifier = Modifier) {
         ) {
             Text("Вывести количество повторений")
         }
+
+        Button(
+            onClick = {
+                output = ""
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Сбросить")
+        }
     }
 }
 
