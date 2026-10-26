@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Mobile Dev Labs"
 include(":app")
- 
+include(":game")
