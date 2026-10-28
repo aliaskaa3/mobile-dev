@@ -1,10 +1,11 @@
-package com.example.mobiledevlabs
+package com.example.game
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.mobiledevlabs.ui.screens.MapScreen
+import com.example.game.ui.screens.MapScreen
+import com.example.game.ui.screens.ShopScreen
 
 @Composable
 fun AppRoot(modifier: Modifier = Modifier) {
-    MapScreen(modifier = modifier)
+    ShopScreen(modifier = modifier)
 }

@@ -1,7 +1,8 @@
-package com.example.mobiledevlabs.ui.screens
+package com.example.game.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,11 +29,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.game.ui.theme.GreenDark
+import com.example.game.ui.theme.GreenLight
+import com.example.game.ui.theme.GreenMedium
+import com.example.game.ui.theme.OrangeLight
 
 
 @Composable
@@ -46,6 +52,7 @@ fun MapScreen(modifier: Modifier) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(GreenLight)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -60,7 +67,8 @@ fun MapScreen(modifier: Modifier) {
                 modifier = Modifier
                     .width(170.dp)
                     .height(70.dp)
-                    .border(2.dp, Color.Green, shape = RoundedCornerShape(12.dp)),
+                    .background(Color.White, RoundedCornerShape(12.dp))
+                    .border(2.dp, GreenDark, shape = RoundedCornerShape(12.dp)),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -74,7 +82,7 @@ fun MapScreen(modifier: Modifier) {
                     text = coinsCount.toString(),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Green
+                    color = GreenDark
                 )
             }
 
@@ -82,7 +90,8 @@ fun MapScreen(modifier: Modifier) {
                 modifier = Modifier
                     .width(170.dp)
                     .height(70.dp)
-                    .border(2.dp, Color.Green, shape = RoundedCornerShape(12.dp)),
+                    .background(Color.White, RoundedCornerShape(12.dp))
+                    .border(2.dp, GreenDark, shape = RoundedCornerShape(12.dp)),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -104,7 +113,7 @@ fun MapScreen(modifier: Modifier) {
                 Text(
                     timeToRestore,
                     fontSize = 20.sp,
-                    color = Color.Green,
+                    color = GreenDark,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -118,9 +127,9 @@ fun MapScreen(modifier: Modifier) {
         ) {
             OutlinedButton(
                 onClick = {},
-                border = BorderStroke(2.dp, Color.Green),
+                border = BorderStroke(2.dp, GreenDark),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
             ) {
                 Icon(
                     imageVector = Icons.Filled.ShoppingCart,
@@ -132,9 +141,9 @@ fun MapScreen(modifier: Modifier) {
 
             OutlinedButton(
                 onClick = {},
-                border = BorderStroke(2.dp, Color.Green),
+                border = BorderStroke(2.dp, GreenDark),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
             ) {
                 Text(
                     "EN",
@@ -152,8 +161,8 @@ fun MapScreen(modifier: Modifier) {
         ) {
             (5 downTo 1).forEach { level ->
                 val buttonColor = when {
-                    level < currentLevel -> Color.Green
-                    level == currentLevel -> Color.Yellow
+                    level < currentLevel -> GreenMedium
+                    level == currentLevel -> OrangeLight
                     else -> Color.LightGray
                 }
                 val offset = if (level % 2 == 0) 80.dp else (-80).dp
@@ -169,7 +178,7 @@ fun MapScreen(modifier: Modifier) {
                             ).show()
                         }
                     },
-                    border = BorderStroke(2.dp, color = buttonColor),
+                    border = BorderStroke(2.dp, color = GreenDark),
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     shape = CircleShape,
                     modifier = Modifier
@@ -191,9 +200,9 @@ fun MapScreen(modifier: Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp),
-            border = BorderStroke(2.dp, Color.Green),
+            border = BorderStroke(2.dp, GreenDark),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+            colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
             contentPadding = PaddingValues(16.dp)
         ) {
             Text(
