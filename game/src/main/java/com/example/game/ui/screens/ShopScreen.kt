@@ -42,9 +42,11 @@ import com.example.game.ui.theme.OrangeDark
 import com.example.game.ui.theme.OrangeLight
 
 @Composable
-fun ShopScreen(modifier: Modifier) {
+fun ShopScreen(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit
+) {
     var coinsCount by remember { mutableIntStateOf(500) }
-    val shopItems = ShopRepository.shopItems
 
     Column(
         modifier = Modifier
@@ -60,7 +62,7 @@ fun ShopScreen(modifier: Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedButton(
-                onClick = {},
+                onClick = onBack,
                 shape = CircleShape,
                 modifier = Modifier.size(50.dp),
                 contentPadding = PaddingValues(0.dp),

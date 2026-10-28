@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +41,11 @@ import com.example.game.ui.theme.OrangeLight
 
 
 @Composable
-fun MapScreen(modifier: Modifier) {
+fun MapScreen(
+    modifier: Modifier = Modifier,
+    onShopClick: () -> Unit,
+    onLevelClick: (Int) -> Unit
+) {
     val coinsCount = 500
     val livesCount = 5
     val timeToRestore = "0:00"
@@ -126,7 +129,7 @@ fun MapScreen(modifier: Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             OutlinedButton(
-                onClick = {},
+                onClick = onShopClick,
                 border = BorderStroke(2.dp, GreenDark),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
@@ -170,6 +173,7 @@ fun MapScreen(modifier: Modifier) {
                 OutlinedButton(
                     onClick = {
                         if (level <= currentLevel) {
+                            onLevelClick(level)
                         } else {
                             Toast.makeText(
                                 context,
@@ -196,7 +200,7 @@ fun MapScreen(modifier: Modifier) {
         }
 
         OutlinedButton(
-            onClick = {},
+            onClick = { onLevelClick(currentLevel) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp),
