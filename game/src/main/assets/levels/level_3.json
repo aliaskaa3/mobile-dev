@@ -1,0 +1,17 @@
+{
+  "id": 3,
+  "rows": 8,
+  "columns": 8,
+  "moves": 30,
+  "shape": "FULL",
+  "goals": [
+    {
+      "type": "BREAK_FROZEN",
+      "target": 8
+    }
+  ],
+  "frozenCells": [
+    10, 11, 12, 19, 20, 21,
+    42, 43, 44, 51, 52, 53
+  ]
+}

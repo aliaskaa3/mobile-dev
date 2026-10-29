@@ -1,0 +1,15 @@
+{
+  "id": 1,
+  "rows": 8,
+  "columns": 8,
+  "moves": 25,
+  "shape": "FULL",
+  "goals": [
+    {
+      "type": "COLLECT",
+      "color": "RED",
+      "target": 10
+    }
+  ],
+  "frozenCells": []
+}

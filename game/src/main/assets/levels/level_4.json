@@ -1,0 +1,22 @@
+{
+  "id": 4,
+  "rows": 8,
+  "columns": 8,
+  "moves": 30,
+  "shape": "CROSS",
+  "goals": [
+    {
+      "type": "COLLECT",
+      "color": "Yellow",
+      "target": 12
+    },
+    {
+      "type": "BREAK_FROZEN",
+      "target": 6
+    }
+  ],
+  "frozenCells": [
+    5, 6, 15, 19, 20,
+    35, 37, 50, 52, 53
+  ]
+}
