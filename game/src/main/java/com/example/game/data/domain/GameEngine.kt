@@ -2,60 +2,189 @@ package com.example.game.data.domain
 
 import com.example.game.data.model.CellColor
 import com.example.game.data.model.GameCell
+import com.example.game.data.model.GameState
+import com.example.game.data.model.GameStatus
+import com.example.game.data.model.LevelConfig
 import kotlin.math.abs
 
 class GameEngine {
 
-    fun createBoard(rows: Int, columns: Int): List<GameCell> {
-        val board = mutableListOf<GameCell>()
+    fun createInitialState(level: LevelConfig): GameState {
+        val cells = MutableList<GameCell?>(level.rows * level.columns) { null }
 
-        for (row in 0 until rows) {
-            for (column in 0 until columns) {
-                val availableColors = CellColor.entries.filter { color ->
-                    val horizontalMatch = column >= 2 &&
-                            board[row * columns + column - 1].color == color &&
-                            board[row * columns + column - 2].color == color
+        for (row in 0 until level.rows) {
+            for (column in 0 until level.columns) {
+                val index = row * level.columns + column
 
-                    val verticalMatch = row >= 2 &&
-                            board[(row - 1) * columns + column].color == color &&
-                            board[(row - 2) * columns + column].color == color
+                val available = CellColor.entries.filter { color ->
+                    val horizontal = column >= 2 &&
+                            cells[index - 1]?.color == color &&
+                            cells[index - 2]?.color == color
 
-                    !horizontalMatch && !verticalMatch
+                    val vertical = row >= 2 &&
+                            cells[index - level.columns]?.color == color &&
+                            cells[index - level.columns * 2]?.color == color
+
+                    !horizontal && !vertical
                 }
 
-                board.add(GameCell(availableColors.random()))
+                cells[index] = GameCell(available.random())
             }
         }
 
-        return board
+        return GameState(cells = cells, movesLeft = level.moves)
     }
 
     fun swapCells(
-        board: List<GameCell>,
+        state: GameState,
         first: Int,
         second: Int,
+        level: LevelConfig
+    ): GameState {
+        if (state.status != GameStatus.PLAYING) return state
+        if (first !in state.cells.indices || second !in state.cells.indices) return state
+        if (!areAdjacent(first, second, level.columns)) return state
+
+        val swapped = state.cells.toMutableList()
+        val temp = swapped[first]
+        swapped[first] = swapped[second]
+        swapped[second] = temp
+
+        if (findMatches(swapped, level.rows, level.columns).isEmpty()) return state
+
+        return resolve(
+            state.copy(cells = swapped, movesLeft = state.movesLeft - 1),
+            level
+        )
+    }
+
+    private fun resolve(
+        initial: GameState,
+        level: LevelConfig
+    ): GameState {
+        var cells = initial.cells.toMutableList()
+        val collected = initial.collected.toMutableMap()
+
+        repeat(100) {
+            val matches = findMatches(cells, level.rows, level.columns)
+
+            if (matches.isEmpty()) {
+                return updateStatus(
+                    initial.copy(cells = cells, collected = collected),
+                    level
+                )
+            }
+
+            for (index in matches) {
+                val cell = cells[index] ?: continue
+                collected[cell.color.name] =
+                    (collected[cell.color.name] ?: 0) + 1
+                cells[index] = null
+            }
+
+            for (column in 0 until level.columns) {
+                val remaining = (level.rows - 1 downTo 0)
+                    .mapNotNull { row -> cells[row * level.columns + column] }
+
+                for (row in level.rows - 1 downTo 0) {
+                    val index = row * level.columns + column
+                    val position = level.rows - 1 - row
+
+                    cells[index] = remaining.getOrNull(position)
+                        ?: GameCell(CellColor.entries.random())
+                }
+            }
+        }
+
+        return updateStatus(
+            initial.copy(cells = cells, collected = collected),
+            level
+        )
+    }
+
+    private fun findMatches(
+        cells: List<GameCell?>,
         rows: Int,
         columns: Int
-    ): List<GameCell> {
-        if (first !in board.indices || second !in board.indices) {
-            return board
+    ): Set<Int> {
+        val result = mutableSetOf<Int>()
+
+        for (row in 0 until rows) {
+            var column = 0
+
+            while (column < columns) {
+                val color = cells[row * columns + column]?.color
+                var end = column + 1
+
+                while (
+                    color != null &&
+                    end < columns &&
+                    cells[row * columns + end]?.color == color
+                ) {
+                    end++
+                }
+
+                if (color != null && end - column >= 3) {
+                    for (c in column until end) {
+                        result.add(row * columns + c)
+                    }
+                }
+
+                column = end
+            }
         }
 
-        if (!areAdjacent(first, second, columns)) {
-            return board
+        for (column in 0 until columns) {
+            var row = 0
+
+            while (row < rows) {
+                val color = cells[row * columns + column]?.color
+                var end = row + 1
+
+                while (
+                    color != null &&
+                    end < rows &&
+                    cells[end * columns + column]?.color == color
+                ) {
+                    end++
+                }
+
+                if (color != null && end - row >= 3) {
+                    for (r in row until end) {
+                        result.add(r * columns + column)
+                    }
+                }
+
+                row = end
+            }
         }
 
-        val swappedBoard = board.toMutableList()
-        val temporary = swappedBoard[first]
+        return result
+    }
 
-        swappedBoard[first] = swappedBoard[second]
-        swappedBoard[second] = temporary
+    private fun updateStatus(
+        state: GameState,
+        level: LevelConfig
+    ): GameState {
+        val won = level.goals.all { goal ->
+            when (goal.type) {
+                "COLLECT" ->
+                    (state.collected[goal.color] ?: 0) >= goal.target
 
-        if (findMatches(swappedBoard, rows, columns).isEmpty()) {
-            return board
+                "BREAK_FROZEN" ->
+                    state.frozenBroken >= goal.target
+
+                else -> false
+            }
         }
 
-        return resolveMatches(swappedBoard, rows, columns)
+        val status = when {
+            won -> GameStatus.WON
+            state.movesLeft <= 0 -> GameStatus.LOST
+            else -> GameStatus.PLAYING
+        }
+
+        return state.copy(status = status)
     }
 
     private fun areAdjacent(
@@ -63,125 +192,12 @@ class GameEngine {
         second: Int,
         columns: Int
     ): Boolean {
-        val firstRow = first / columns
-        val firstColumn = first % columns
-        val secondRow = second / columns
-        val secondColumn = second % columns
+        val row1 = first / columns
+        val col1 = first % columns
+        val row2 = second / columns
+        val col2 = second % columns
 
-        return (
-                firstRow == secondRow &&
-                        abs(firstColumn - secondColumn) == 1
-                ) || (
-                firstColumn == secondColumn &&
-                        abs(firstRow - secondRow) == 1
-                )
-    }
-
-    private fun resolveMatches(
-        initialBoard: List<GameCell>,
-        rows: Int,
-        columns: Int
-    ): List<GameCell> {
-        var board: List<GameCell?> = initialBoard
-
-        repeat(100) {
-            val matches = findMatches(board, rows, columns)
-
-            if (matches.isEmpty()) {
-                return board.filterNotNull()
-            }
-
-            val nextBoard: MutableList<GameCell?> =
-                board.toMutableList()
-
-            matches.forEach { index ->
-                nextBoard[index] = null
-            }
-
-            for (column in 0 until columns) {
-                val remainingCells = (rows - 1 downTo 0)
-                    .mapNotNull { row ->
-                        nextBoard[row * columns + column]
-                    }
-
-                for (row in rows - 1 downTo 0) {
-                    val index = row * columns + column
-                    val positionFromBottom = rows - 1 - row
-
-                    nextBoard[index] =
-                        if (positionFromBottom < remainingCells.size) {
-                            remainingCells[positionFromBottom]
-                        } else {
-                            GameCell(CellColor.entries.random())
-                        }
-                }
-            }
-
-            board = nextBoard
-        }
-
-        return board.filterNotNull()
-    }
-
-    private fun findMatches(
-        board: List<GameCell?>,
-        rows: Int,
-        columns: Int
-    ): Set<Int> {
-        val matches = mutableSetOf<Int>()
-
-        // Ищем горизонтальные совпадения.
-        for (row in 0 until rows) {
-            var column = 0
-
-            while (column < columns) {
-                val color = board[row * columns + column]?.color
-                var endColumn = column + 1
-
-                while (
-                    color != null &&
-                    endColumn < columns &&
-                    board[row * columns + endColumn]?.color == color
-                ) {
-                    endColumn++
-                }
-
-                if (color != null && endColumn - column >= 3) {
-                    for (c in column until endColumn) {
-                        matches.add(row * columns + c)
-                    }
-                }
-
-                column = endColumn
-            }
-        }
-
-        // Ищем вертикальные совпадения.
-        for (column in 0 until columns) {
-            var row = 0
-
-            while (row < rows) {
-                val color = board[row * columns + column]?.color
-                var endRow = row + 1
-
-                while (
-                    color != null &&
-                    endRow < rows &&
-                    board[endRow * columns + column]?.color == color
-                ) {
-                    endRow++
-                }
-
-                if (color != null && endRow - row >= 3) {
-                    for (r in row until endRow) {
-                        matches.add(r * columns + column)
-                    }
-                }
-
-                row = endRow
-            }
-        }
-
-        return matches
+        return (row1 == row2 && abs(col1 - col2) == 1) ||
+                (col1 == col2 && abs(row1 - row2) == 1)
     }
 }
