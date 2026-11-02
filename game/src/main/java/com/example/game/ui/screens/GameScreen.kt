@@ -157,11 +157,13 @@ fun GameScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize(0.8f)
-                                    .background(
-                                        cellColor(cell.color),
-                                        CircleShape
-                                    )
-                            )
+                                    .background(cellColor(cell.color), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (cell.isFrozen) {
+                                    Text("❄", fontSize = 15.sp)
+                                }
+                            }
                         }
                     }
                 }
