@@ -22,11 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,12 +30,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.game.data.domain.GameEngine
-import com.example.game.data.model.GameState
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.game.data.model.BoosterType
 import com.example.game.data.model.GameStatus
 import com.example.game.data.model.LevelGoal
+import com.example.game.data.repository.BoosterRepository
 import com.example.game.data.repository.LevelRepository
 import com.example.game.data.utils.cellColor
+import com.example.game.ui.components.BoosterButton
 import com.example.game.ui.components.InfoBox
 import com.example.game.ui.theme.GreenLight
 import com.example.game.ui.theme.OrangeDark
@@ -47,23 +47,45 @@ import com.example.game.ui.theme.OrangeDark
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    levelId: Int = 1
+    levelId: Int = 1,
+    onBoosterClick: (BoosterType) -> Unit = {}
 ) {
     val context = LocalContext.current
+
     val level = remember(levelId) {
         LevelRepository(context).getLevel(levelId)
     }
-    val engine = remember { GameEngine() }
 
-    var game by remember(levelId) {
-        mutableStateOf(engine.createInitialState(level))
+    val factory = remember(level) {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
+                    return GameViewModel(level) as T
+                }
+
+                throw IllegalArgumentException(
+                    "Unknown ViewModel: ${modelClass.name}"
+                )
+            }
+        }
     }
-    var selectedCell by remember(levelId) {
-        mutableIntStateOf(-1)
-    }
+
+    val gameViewModel: GameViewModel = viewModel(
+        key = "game-$levelId",
+        factory = factory
+    )
+
+    val uiState = gameViewModel.uiState
+    val game = uiState.game
+    val boosters = remember { BoosterRepository().boosterItems }
 
     val goalText = level.goals.joinToString("\n") { goal ->
-        formatGoal(goal, game.collected, game.frozenBroken)
+        formatGoal(
+            goal = goal,
+            collected = game.collected,
+            frozenBroken = game.frozenBroken
+        )
     }
 
     Column(
@@ -100,7 +122,7 @@ fun GameScreen(
             )
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
 
         Box(
             modifier = Modifier
@@ -108,7 +130,8 @@ fun GameScreen(
                 .aspectRatio(1f)
                 .background(Color.White, RoundedCornerShape(18.dp))
                 .border(2.dp, OrangeDark, RoundedCornerShape(18.dp))
-                .padding(8.dp)
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(level.columns),
@@ -118,12 +141,13 @@ fun GameScreen(
             ) {
                 items(game.cells.indices.toList()) { index ->
                     val cell = game.cells[index]
+                    val selected = uiState.selectedCell == index
 
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .then(
-                                if (selectedCell == index) {
+                                if (selected) {
                                     Modifier.border(
                                         3.dp,
                                         OrangeDark,
@@ -137,19 +161,7 @@ fun GameScreen(
                                 enabled = cell != null &&
                                         game.status == GameStatus.PLAYING
                             ) {
-                                if (selectedCell == -1) {
-                                    selectedCell = index
-                                } else if (selectedCell == index) {
-                                    selectedCell = -1
-                                } else {
-                                    game = engine.swapCells(
-                                        state = game,
-                                        first = selectedCell,
-                                        second = index,
-                                        level = level
-                                    )
-                                    selectedCell = -1
-                                }
+                                gameViewModel.onCellTap(index)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -157,7 +169,10 @@ fun GameScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize(0.8f)
-                                    .background(cellColor(cell.color), CircleShape),
+                                    .background(
+                                        cellColor(cell.color),
+                                        CircleShape
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (cell.isFrozen) {
@@ -180,17 +195,36 @@ fun GameScreen(
                     "Ходы закончились"
                 },
                 color = OrangeDark,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
             )
 
-            Button(
-                onClick = {
-                    game = engine.createInitialState(level)
-                    selectedCell = -1
-                }
-            ) {
+            Button(onClick = { gameViewModel.restart() }) {
                 Text("Начать заново")
+            }
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(82.dp)
+                .background(Color.White, RoundedCornerShape(16.dp))
+                .border(2.dp, OrangeDark, RoundedCornerShape(16.dp))
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            boosters.forEach { booster ->
+                BoosterButton(
+                    icon = booster.icon,
+                    contentDescription = booster.contentDescription,
+                    onClick = {
+                        gameViewModel.activateBooster(booster.type)
+                        onBoosterClick(booster.type)
+                    }
+                )
             }
         }
     }

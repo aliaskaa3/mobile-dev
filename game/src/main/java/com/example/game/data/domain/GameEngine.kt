@@ -1,5 +1,6 @@
 package com.example.game.data.domain
 
+import com.example.game.data.model.BoosterType
 import com.example.game.data.model.CellColor
 import com.example.game.data.model.GameCell
 import com.example.game.data.model.GameState
@@ -52,11 +53,17 @@ class GameEngine {
         state: GameState,
         first: Int,
         second: Int,
-        level: LevelConfig
+        level: LevelConfig,
+        allowNonAdjacent: Boolean = false
     ): GameState {
         if (state.status != GameStatus.PLAYING) return state
         if (first !in state.cells.indices || second !in state.cells.indices) return state
-        if (!areAdjacent(first, second, level.columns)) return state
+        if (first == second) return state
+
+        if (!allowNonAdjacent && !areAdjacent(first, second, level.columns)) {
+            return state
+        }
+
         if (state.cells[first]?.isFrozen != false) return state
         if (state.cells[second]?.isFrozen != false) return state
 
@@ -71,6 +78,134 @@ class GameEngine {
             state.copy(cells = swapped, movesLeft = state.movesLeft - 1),
             level
         )
+    }
+
+    fun useBooster(
+        state: GameState,
+        type: BoosterType,
+        index: Int,
+        level: LevelConfig,
+        targetIndex: Int? = null
+    ): GameState {
+        if (state.status != GameStatus.PLAYING) return state
+        if (index !in state.cells.indices || state.cells[index] == null) return state
+        if (!isPlayable(index / level.columns, index % level.columns, level)) return state
+
+        return when (type) {
+            BoosterType.SWAP -> applySwapBooster(state, index, targetIndex, level)
+            BoosterType.HAMMER -> applyHammerBooster(state, index, level)
+            BoosterType.CROSS_CLEAR -> applyCrossClearBooster(state, index, level)
+        }
+    }
+
+    private fun applySwapBooster(
+        state: GameState,
+        index: Int,
+        targetIndex: Int?,
+        level: LevelConfig
+    ): GameState {
+        if (targetIndex == null || targetIndex !in state.cells.indices) return state
+        val cell1 = state.cells[index] ?: return state
+        val cell2 = state.cells[targetIndex] ?: return state
+
+        if (targetIndex !in neighbors(
+                index,
+                level
+            ) || cell1.isFrozen || cell2.isFrozen
+        ) return state
+
+        val swappedCells = state.cells.toMutableList()
+        swappedCells[index] = cell2
+        swappedCells[targetIndex] = cell1
+
+        return resolve(state.copy(cells = swappedCells), level)
+    }
+
+    private fun applyHammerBooster(state: GameState, index: Int, level: LevelConfig): GameState {
+        val cells = state.cells.toMutableList()
+        val cell = cells[index] ?: return state
+
+        if (cell.isFrozen) {
+            cells[index] = cell.copy(isFrozen = false)
+            return updateStatus(
+                state.copy(cells = cells, frozenBroken = state.frozenBroken + 1),
+                level
+            )
+        }
+
+        val collected = state.collected.toMutableMap()
+        collected[cell.color.name] = (collected[cell.color.name] ?: 0) + 1
+
+        val targetColumn = index % level.columns
+        var writeRow = index / level.columns
+
+        for (readRow in (writeRow - 1) downTo 0) {
+            val writeIndex = writeRow * level.columns + targetColumn
+            val readIndex = readRow * level.columns + targetColumn
+            val readCell = cells[readIndex]
+
+            if (readCell?.isFrozen == true) continue
+
+            if (cells[writeIndex]?.isFrozen == true) {
+                writeRow--
+                cells[writeRow * level.columns + targetColumn] = readCell
+            } else {
+                cells[writeIndex] = readCell
+            }
+            if (readRow != writeRow) cells[readIndex] = null
+            writeRow--
+        }
+
+        return resolve(state.copy(cells = refill(cells, level), collected = collected), level)
+    }
+
+    private fun applyCrossClearBooster(
+        state: GameState,
+        index: Int,
+        level: LevelConfig
+    ): GameState {
+        val targetRow = index / level.columns
+        val targetColumn = index % level.columns
+        val cells = state.cells.toMutableList()
+        val collected = state.collected.toMutableMap()
+        var currentFrozenBroken = state.frozenBroken
+
+        for (i in cells.indices) {
+            val r = i / level.columns
+            val c = i % level.columns
+            if ((r == targetRow || c == targetColumn) && isPlayable(r, c, level)) {
+                val cell = cells[i] ?: continue
+                if (cell.isFrozen) {
+                    cells[i] = cell.copy(isFrozen = false)
+                    currentFrozenBroken++
+                } else {
+                    collected[cell.color.name] = (collected[cell.color.name] ?: 0) + 1
+                    cells[i] = null
+                }
+            }
+        }
+
+        val filledCells = refill(cells, level).toMutableList()
+        val structuralFrozenIndexes =
+            filledCells.indices.filter { filledCells[it]?.isFrozen == true }
+        for (i in structuralFrozenIndexes) {
+            filledCells[i] = filledCells[i]?.copy(isFrozen = false)
+        }
+
+        val intermediateState = state.copy(
+            cells = filledCells,
+            collected = collected,
+            frozenBroken = currentFrozenBroken
+        )
+        val finalState = resolve(intermediateState, level)
+
+        val finalCells = finalState.cells.toMutableList()
+        for (i in structuralFrozenIndexes) {
+            if (i in finalCells.indices) {
+                finalCells[i] = finalCells[i]?.copy(isFrozen = true)
+            }
+        }
+        return finalState.copy(cells = finalCells)
     }
 
     private fun resolve(
@@ -102,10 +237,10 @@ class GameEngine {
 
             for (index in matches) {
                 val cell = cells[index] ?: continue
+                if (cell.isFrozen) continue
 
                 collected[cell.color.name] =
                     (collected[cell.color.name] ?: 0) + 1
-
                 cells[index] = null
             }
 
@@ -194,9 +329,7 @@ class GameEngine {
 
                 var end = column + 1
 
-                while (end < level.columns) {
-                    if (!isPlayable(row, end, level)) break
-
+                while (end < level.columns && isPlayable(row, end, level)) {
                     val next = cells[row * level.columns + end]
                     if (next == null || next.isFrozen || next.color != cell.color) break
                     end++
@@ -230,9 +363,7 @@ class GameEngine {
 
                 var end = row + 1
 
-                while (end < level.rows) {
-                    if (!isPlayable(end, column, level)) break
-
+                while (end < level.rows && isPlayable(end, column, level)) {
                     val next = cells[end * level.columns + column]
                     if (next == null || next.isFrozen || next.color != cell.color) break
                     end++
@@ -287,8 +418,7 @@ class GameEngine {
                 !isCorner
             }
 
-            "CENTER_HOLE" ->{
-
+            "CENTER_HOLE" -> {
                 val isInsideCenterHole = abs(row - centerRow) < 1.0f &&
                         abs(column - centerColumn) < 1.0f
 
