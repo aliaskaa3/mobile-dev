@@ -34,14 +34,14 @@ fun InfoBox(
     ) {
         Text(
             text = title,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             color = OrangeDark,
             fontWeight = FontWeight.Medium
         )
 
         Text(
             text = value,
-            fontSize = if (value.length > 12) 10.sp else 16.sp,
+            fontSize = if (value.length > 10) 12.sp else 16.sp,
             color = OrangeDark,
             fontWeight = FontWeight.Bold,
             maxLines = 3

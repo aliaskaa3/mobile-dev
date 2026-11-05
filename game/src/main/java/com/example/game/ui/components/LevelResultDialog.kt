@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.game.data.model.GameStatus
+import com.example.game.R
 import com.example.game.ui.theme.GreenMedium
 import com.example.game.ui.theme.OrangeDark
 
@@ -59,7 +61,7 @@ fun LevelResultDialog(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Text(
-                    text = if (won) "Победа!" else "Не вышло...",
+                    text = if (won) stringResource(R.string.result_win) else stringResource(R.string.result_loss),
                     color = OrangeDark,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Normal
@@ -68,7 +70,7 @@ fun LevelResultDialog(
                 if (won) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Награда:",
+                            text = stringResource(R.string.result_reward),
                             color = OrangeDark,
                             fontSize = 18.sp
                         )
@@ -83,13 +85,13 @@ fun LevelResultDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MonetizationOn,
-                                contentDescription = "Монета",
+                                contentDescription = stringResource(R.string.coin_description),
                                 tint = Color.Yellow,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "+$reward",
+                                text = stringResource(R.string.result_reward_amount, reward),
                                 color = OrangeDark,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
@@ -103,7 +105,7 @@ fun LevelResultDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
-                            contentDescription = "Сердце",
+                            contentDescription = stringResource(R.string.heart_description),
                             tint = Color.Red,
                             modifier = Modifier.size(45.dp)
                         )
@@ -111,7 +113,7 @@ fun LevelResultDialog(
                         Spacer(modifier = Modifier.width(12.dp))
 
                         Text(
-                            text = "-1",
+                            text = stringResource(R.string.result_lost_life),
                             color = OrangeDark,
                             fontSize = 38.sp
                         )
@@ -152,7 +154,7 @@ fun LevelResultDialog(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    "+5 ходов",
+                                    stringResource(R.string.result_buy_moves),
                                     color = Color.White,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold
@@ -162,13 +164,13 @@ fun LevelResultDialog(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.MonetizationOn,
-                                        contentDescription = "Монета",
+                                        contentDescription = stringResource(R.string.coin_description),
                                         tint = Color.Yellow,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(2.dp))
                                     Text(
-                                        "300",
+                                        stringResource(R.string.result_buy_moves_cost),
                                         color = Color.White,
                                         fontSize = 11.sp
                                     )

@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -41,6 +42,7 @@ import com.example.game.data.model.LevelGoal
 import com.example.game.data.repository.BoosterRepository
 import com.example.game.data.repository.LevelRepository
 import com.example.game.data.utils.cellColor
+import com.example.game.R
 import com.example.game.ui.components.BoosterButton
 import com.example.game.ui.components.InfoBox
 import com.example.game.ui.components.LevelResultDialog
@@ -87,7 +89,7 @@ fun GameScreen(
 
     val uiState = gameViewModel.uiState
     val game = uiState.game
-    val boosters = remember { BoosterRepository().boosterItems }
+    val boosters = BoosterRepository().boosterItems()
 
     var rewardReported by remember(levelId) {
         mutableStateOf(false)
@@ -104,7 +106,8 @@ fun GameScreen(
         formatGoal(
             goal = goal,
             collected = game.collected,
-            frozenBroken = game.frozenBroken
+            frozenBroken = game.frozenBroken,
+            context = context
         )
     }
 
@@ -112,7 +115,8 @@ fun GameScreen(
         modifier = modifier
             .fillMaxSize()
             .background(GreenLight)
-            .padding(16.dp),
+            .padding(16.dp)
+            .padding(top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -120,7 +124,7 @@ fun GameScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             InfoBox(
-                title = "Уровень",
+                title = stringResource(R.string.level),
                 value = level.id.toString(),
                 modifier = Modifier.width(65.dp)
             )
@@ -128,7 +132,7 @@ fun GameScreen(
             Spacer(modifier = Modifier.width(6.dp))
 
             InfoBox(
-                title = "Цели",
+                title = stringResource(R.string.goals),
                 value = goalText,
                 modifier = Modifier.weight(1f)
             )
@@ -136,7 +140,7 @@ fun GameScreen(
             Spacer(modifier = Modifier.width(6.dp))
 
             InfoBox(
-                title = "Ходы",
+                title = stringResource(R.string.moves),
                 value = game.movesLeft.toString(),
                 modifier = Modifier.width(60.dp)
             )
@@ -258,25 +262,26 @@ fun GameScreen(
 private fun formatGoal(
     goal: LevelGoal,
     collected: Map<String, Int>,
-    frozenBroken: Int
+    frozenBroken: Int,
+    context: android.content.Context
 ): String {
     return when (goal.type) {
         "COLLECT" -> {
             val current = collected[goal.color] ?: 0
             val colorName = when (goal.color) {
-                "RED" -> "Красные"
-                "BLUE" -> "Синие"
-                "YELLOW" -> "Жёлтые"
-                "GREEN" -> "Зелёные"
-                "PINK" -> "Розовые"
-                else -> "Фишки"
+                "RED" -> context.getString(R.string.color_red)
+                "BLUE" -> context.getString(R.string.color_blue)
+                "YELLOW" -> context.getString(R.string.color_yellow)
+                "GREEN" -> context.getString(R.string.color_green)
+                "PINK" -> context.getString(R.string.color_pink)
+                else -> context.getString(R.string.chips)
             }
 
-            "$colorName: $current/${goal.target}"
+            context.getString(R.string.goal_progress, colorName, current, goal.target)
         }
 
         "BREAK_FROZEN" ->
-            "Лёд: $frozenBroken/${goal.target}"
+            context.getString(R.string.ice_progress, frozenBroken, goal.target)
 
         else ->
             "${goal.type}: ${goal.target}"

@@ -32,10 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.game.R
 import com.example.game.data.repository.ShopRepository
 import com.example.game.ui.components.ShopItemCard
 import com.example.game.ui.theme.OrangeDark
@@ -47,6 +49,7 @@ fun ShopScreen(
     onBack: () -> Unit
 ) {
     var coinsCount by remember { mutableIntStateOf(500) }
+    val shopItems = ShopRepository.shopItems()
 
     Column(
         modifier = Modifier
@@ -71,13 +74,13 @@ fun ShopScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Назад",
+                    contentDescription = stringResource(R.string.back),
                     tint = Color.White
                 )
             }
 
             Text(
-                text = "Магазин",
+                stringResource(R.string.shop_title),
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
@@ -95,7 +98,7 @@ fun ShopScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.MonetizationOn,
-                    contentDescription = "Монета",
+                    contentDescription = stringResource(R.string.coin_description),
                     tint = Color.Yellow,
                     modifier = Modifier.size(40.dp)
                 )
@@ -113,7 +116,7 @@ fun ShopScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(ShopRepository.shopItems) { shopItem ->
+            items(shopItems) { shopItem ->
                 ShopItemCard(
                     item = shopItem,
                     coinsCount = coinsCount,

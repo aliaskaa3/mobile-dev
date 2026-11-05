@@ -34,10 +34,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.game.ui.components.LanguageSwitcher
 import com.example.game.ui.theme.GreenDark
 import com.example.game.ui.theme.GreenLight
 import com.example.game.ui.theme.GreenMedium
 import com.example.game.ui.theme.OrangeLight
+import androidx.compose.ui.res.stringResource
+import com.example.game.R
 
 
 @Composable
@@ -77,7 +80,7 @@ fun MapScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.MonetizationOn,
-                    contentDescription = "Монета",
+                    contentDescription = stringResource(R.string.coin_description),
                     tint = Color.Yellow,
                     modifier = Modifier.size(40.dp)
                 )
@@ -101,7 +104,7 @@ fun MapScreen(
                 Box {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Сердце",
+                        contentDescription = stringResource(R.string.heart_description),
                         tint = Color.Red,
                         modifier = Modifier.size(45.dp)
                     )
@@ -136,23 +139,14 @@ fun MapScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.ShoppingCart,
-                    contentDescription = "Магазин",
+                    contentDescription = stringResource(R.string.shop_description),
                     tint = Color.White,
                     modifier = Modifier.size(25.dp)
                 )
             }
 
-            OutlinedButton(
-                onClick = {},
-                border = BorderStroke(2.dp, GreenDark),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
-            ) {
-                Text(
-                    "EN",
-                    fontSize = 20.sp
-                )
-            }
+            LanguageSwitcher()
+
         }
 
         Column(
@@ -177,7 +171,7 @@ fun MapScreen(
                         } else {
                             Toast.makeText(
                                 context,
-                                "Уровень недоступен",
+                                context.getString(R.string.level_unavailable),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -210,9 +204,9 @@ fun MapScreen(
             contentPadding = PaddingValues(16.dp)
         ) {
             Text(
-                "Начать игру >",
+                stringResource(R.string.play),
                 fontSize = 25.sp
-            )
+                )
         }
 
     }

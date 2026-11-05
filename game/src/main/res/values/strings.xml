@@ -1,3 +1,54 @@
 <resources>
-    <string name="app_name">game</string>
+    <string name="app_name">Gem Match</string>
+
+    <string name="language">Язык</string>
+    <string name="shop_title">Магазин</string>
+    <string name="replace">Перестановка</string>
+    <string name="cross_clear">Перекрёстный огонь</string>
+    <string name="hammer">Молот</string>
+    <string name="life">Жизнь</string>
+    <string name="swap_description">Меняет местами соседние фишки</string>
+    <string name="cross_clear_description">Уничтожает все фишки в строке и столбце</string>
+    <string name="hammer_description">Уничтожает одну выбранную фишку</string>
+    <string name="life_description">Добавляет одну жизнь</string>
+
+
+    <string name="level">Уровень</string>
+
+    <string name="play">Начать игру ></string>
+    <string name="back">Назад</string>
+    <string name="coins">Монеты</string>
+    <string name="lives">Жизни</string>
+
+    <string name="moves">Ходы</string>
+    <string name="goals">Цели</string>
+
+
+    <string name="buy">Купить</string>
+    <string name="not_enough_coins">Недостаточно монет</string>
+
+
+    <string name="result_win">Победа!</string>
+    <string name="result_loss">Не вышло...</string>
+    <string name="result_reward">Награда:</string>
+
+
+    <string name="result_buy_moves">+5 ходов</string>
+    <string name="result_buy_moves_cost">300</string>
+
+    <string name="result_reward_amount">+%1$d</string>
+    <string name="result_lost_life">-1</string>
+    <string name="coin_description">Монета</string>
+    <string name="heart_description">Сердце</string>
+    <string name="shop_description">Магазин</string>
+    <string name="level_unavailable">Уровень недоступен</string>
+    <string name="not_enough_coins_message">Не хватает монет!</string>
+    <string name="color_red">Красные</string>
+    <string name="color_blue">Синие</string>
+    <string name="color_yellow">Жёлтые</string>
+    <string name="color_green">Зелёные</string>
+    <string name="color_pink">Розовые</string>
+    <string name="chips">Фишки</string>
+    <string name="goal_progress">%1$s: %2$d/%3$d</string>
+    <string name="ice_progress">Лёд: %1$d/%2$d</string>
 </resources>

@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,7 +73,7 @@ fun ShopItemCard(
                     imageVector = item.icon,
                     contentDescription = item.title,
                     modifier = Modifier.size(44.dp),
-                    tint = if (item.title == "Жизнь") Color.Red else Color.Black
+                    tint = if (item.title == stringResource(com.example.game.R.string.life)) Color.Red else Color.Black
                 )
             }
 
@@ -106,7 +107,7 @@ fun ShopItemCard(
                     if (isEnough) {
                         onCoinsChanged(coinsCount - item.price)
                     } else {
-                        Toast.makeText(context, "Не хватает монет!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(com.example.game.R.string.not_enough_coins_message), Toast.LENGTH_SHORT).show()
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OrangeLight),
@@ -123,7 +124,7 @@ fun ShopItemCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.MonetizationOn,
-                        contentDescription = "Монета",
+                        contentDescription = stringResource(com.example.game.R.string.coin_description),
                         tint = Color.Yellow,
                         modifier = Modifier.size(20.dp)
                     )
