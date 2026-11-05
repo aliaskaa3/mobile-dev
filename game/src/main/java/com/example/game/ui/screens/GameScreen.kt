@@ -19,15 +19,17 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -41,14 +43,21 @@ import com.example.game.data.repository.LevelRepository
 import com.example.game.data.utils.cellColor
 import com.example.game.ui.components.BoosterButton
 import com.example.game.ui.components.InfoBox
+import com.example.game.ui.components.LevelResultDialog
 import com.example.game.ui.theme.GreenLight
 import com.example.game.ui.theme.OrangeDark
+
+private const val LEVEL_REWARD = 50
+private const val LAST_LEVEL_ID = 5
 
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
     levelId: Int = 1,
-    onBoosterClick: (BoosterType) -> Unit = {}
+    onBoosterClick: (BoosterType) -> Unit = {},
+    onNextLevel: () -> Unit = {},
+    onMapClick: () -> Unit = {},
+    onRewardEarned: (Int) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -65,7 +74,7 @@ fun GameScreen(
                 }
 
                 throw IllegalArgumentException(
-                    "Unknown ViewModel: ${modelClass.name}"
+                    "Неизвестная модель: ${modelClass.name}"
                 )
             }
         }
@@ -79,6 +88,17 @@ fun GameScreen(
     val uiState = gameViewModel.uiState
     val game = uiState.game
     val boosters = remember { BoosterRepository().boosterItems }
+
+    var rewardReported by remember(levelId) {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(game.status) {
+        if (game.status == GameStatus.WON && !rewardReported) {
+            rewardReported = true
+            onRewardEarned(LEVEL_REWARD)
+        }
+    }
 
     val goalText = level.goals.joinToString("\n") { goal ->
         formatGoal(
@@ -105,7 +125,7 @@ fun GameScreen(
                 modifier = Modifier.width(65.dp)
             )
 
-            Spacer(Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
             InfoBox(
                 title = "Цели",
@@ -113,7 +133,7 @@ fun GameScreen(
                 modifier = Modifier.weight(1f)
             )
 
-            Spacer(Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
             InfoBox(
                 title = "Ходы",
@@ -122,7 +142,7 @@ fun GameScreen(
             )
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Box(
             modifier = Modifier
@@ -149,9 +169,9 @@ fun GameScreen(
                             .then(
                                 if (selected) {
                                     Modifier.border(
-                                        3.dp,
-                                        OrangeDark,
-                                        CircleShape
+                                        width = 3.dp,
+                                        color = OrangeDark,
+                                        shape = CircleShape
                                     )
                                 } else {
                                     Modifier
@@ -168,15 +188,18 @@ fun GameScreen(
                         if (cell != null) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize(0.8f)
+                                    .fillMaxSize(0.82f)
                                     .background(
-                                        cellColor(cell.color),
-                                        CircleShape
+                                        color = cellColor(cell.color),
+                                        shape = CircleShape
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (cell.isFrozen) {
-                                    Text("❄", fontSize = 15.sp)
+                                    Text(
+                                        text = "❄",
+                                        fontSize = 15.sp
+                                    )
                                 }
                             }
                         }
@@ -185,26 +208,7 @@ fun GameScreen(
             }
         }
 
-        if (game.status != GameStatus.PLAYING) {
-            Spacer(Modifier.height(12.dp))
-
-            Text(
-                text = if (game.status == GameStatus.WON) {
-                    "Уровень пройден!"
-                } else {
-                    "Ходы закончились"
-                },
-                color = OrangeDark,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Button(onClick = { gameViewModel.restart() }) {
-                Text("Начать заново")
-            }
-        }
-
-        Spacer(Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
         Row(
             modifier = Modifier
@@ -221,12 +225,33 @@ fun GameScreen(
                     icon = booster.icon,
                     contentDescription = booster.contentDescription,
                     onClick = {
-                        gameViewModel.activateBooster(booster.type)
-                        onBoosterClick(booster.type)
+                        if (game.status == GameStatus.PLAYING) {
+                            gameViewModel.activateBooster(booster.type)
+                            onBoosterClick(booster.type)
+                        }
                     }
                 )
             }
         }
+    }
+
+    if (game.status != GameStatus.PLAYING) {
+        LevelResultDialog(
+            status = game.status,
+            reward = LEVEL_REWARD,
+            onRetry = {
+                rewardReported = false
+                gameViewModel.restart()
+            },
+            onNextLevel = {
+                if (levelId < LAST_LEVEL_ID) {
+                    onNextLevel()
+                } else {
+                    onMapClick()
+                }
+            },
+            onMap = onMapClick
+        )
     }
 }
 
@@ -237,19 +262,23 @@ private fun formatGoal(
 ): String {
     return when (goal.type) {
         "COLLECT" -> {
+            val current = collected[goal.color] ?: 0
             val colorName = when (goal.color) {
-                "RED" -> "красных"
-                "BLUE" -> "синих"
-                "YELLOW" -> "жёлтых"
-                "GREEN" -> "зелёных"
-                "PINK" -> "розовых"
-                else -> "фишек"
+                "RED" -> "Красные"
+                "BLUE" -> "Синие"
+                "YELLOW" -> "Жёлтые"
+                "GREEN" -> "Зелёные"
+                "PINK" -> "Розовые"
+                else -> "Фишки"
             }
 
-            "$colorName: ${collected[goal.color] ?: 0}/${goal.target}"
+            "$colorName: $current/${goal.target}"
         }
 
-        "BREAK_FROZEN" -> "Лёд: $frozenBroken/${goal.target}"
-        else -> "${goal.type}: ${goal.target}"
+        "BREAK_FROZEN" ->
+            "Лёд: $frozenBroken/${goal.target}"
+
+        else ->
+            "${goal.type}: ${goal.target}"
     }
 }

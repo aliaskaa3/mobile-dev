@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.game.data.model.BoosterType
 import com.example.game.ui.screens.GameScreen
 import com.example.game.ui.screens.MapScreen
 import com.example.game.ui.screens.ShopScreen
@@ -59,7 +60,23 @@ fun AppRoot(modifier: Modifier = Modifier) {
                 ?.getInt("levelId") ?: 1
 
             GameScreen(
-                levelId = levelId
+                levelId = levelId,
+                onBoosterClick = { _: BoosterType -> },
+                onNextLevel = {
+                    navController.navigate(
+                        Routes.game(levelId + 1)
+                    ) {
+                        popUpTo(Routes.game(levelId)) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onMapClick = {
+                    navController.popBackStack(
+                        route = Routes.MAP,
+                        inclusive = false
+                    )
+                }
             )
         }
     }
