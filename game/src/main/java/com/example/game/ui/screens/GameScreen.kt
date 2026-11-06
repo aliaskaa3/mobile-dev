@@ -43,6 +43,7 @@ import com.example.game.data.repository.BoosterRepository
 import com.example.game.data.repository.LevelRepository
 import com.example.game.data.utils.cellColor
 import com.example.game.R
+import com.example.game.ui.components.AnimatedGameBoard
 import com.example.game.ui.components.BoosterButton
 import com.example.game.ui.components.InfoBox
 import com.example.game.ui.components.LevelResultDialog
@@ -148,69 +149,15 @@ fun GameScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .background(Color.White, RoundedCornerShape(18.dp))
-                .border(2.dp, OrangeDark, RoundedCornerShape(18.dp))
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(level.columns),
-                horizontalArrangement = Arrangement.spacedBy(3.dp),
-                verticalArrangement = Arrangement.spacedBy(3.dp),
-                userScrollEnabled = false
-            ) {
-                items(game.cells.indices.toList()) { index ->
-                    val cell = game.cells[index]
-                    val selected = uiState.selectedCell == index
-
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .then(
-                                if (selected) {
-                                    Modifier.border(
-                                        width = 3.dp,
-                                        color = OrangeDark,
-                                        shape = CircleShape
-                                    )
-                                } else {
-                                    Modifier
-                                }
-                            )
-                            .clickable(
-                                enabled = cell != null &&
-                                        game.status == GameStatus.PLAYING
-                            ) {
-                                gameViewModel.onCellTap(index)
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (cell != null) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize(0.82f)
-                                    .background(
-                                        color = cellColor(cell.color),
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (cell.isFrozen) {
-                                    Text(
-                                        text = "❄",
-                                        fontSize = 15.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        AnimatedGameBoard(
+            cells = game.cells,
+            rows = level.rows,
+            columns = level.columns,
+            selectedCell = uiState.selectedCell,
+            onCellClick = { index -> gameViewModel.onCellTap(index) },
+            cellColor = { cell -> cellColor(cell.color) },
+            enabled = game.status == GameStatus.PLAYING
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
