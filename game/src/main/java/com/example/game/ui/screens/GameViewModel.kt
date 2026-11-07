@@ -9,6 +9,7 @@ import com.example.game.data.model.BoosterType
 import com.example.game.data.model.GameState
 import com.example.game.data.model.GameStatus
 import com.example.game.data.model.LevelConfig
+import com.example.game.data.model.SpecialType
 
 data class GameUiState(
     val game: GameState,
@@ -90,7 +91,20 @@ class GameViewModel(
                 if (current.selectedCell == -1) {
                     uiState = current.copy(selectedCell = index)
                 } else if (current.selectedCell == index) {
-                    uiState = current.copy(selectedCell = -1)
+                    val cell = game.cells.getOrNull(index)
+                    if (cell != null && cell.specialType != SpecialType.NONE) {
+                        val updated = engine.activateSpecialPiece(
+                            state = game,
+                            index = index,
+                            level = level
+                        )
+                        uiState = current.copy(
+                            game = updated,
+                            selectedCell = -1
+                        )
+                    } else {
+                        uiState = current.copy(selectedCell = -1)
+                    }
                 } else {
                     val updated = engine.swapCells(
                         state = game,
