@@ -33,7 +33,7 @@
 
 
     <string name="result_buy_moves">+5 moves</string>
-    <string name="result_buy_moves_cost">300</string>
+    <string name="result_buy_moves_cost">100</string>
 
     <string name="result_reward_amount">+%1$d</string>
     <string name="result_lost_life">-1</string>
@@ -42,6 +42,12 @@
     <string name="shop_description">Shop</string>
     <string name="level_unavailable">Level unavailable</string>
     <string name="not_enough_coins_message">Not enough coins!</string>
+    <string name="no_lives_message">You have no lives! Wait for recovery or buy in the shop.</string>
+    <string name="max_lives_reached">You already have maximum lives!</string>
+    <string name="no_boosters_message">You don\'t have this booster! Buy it in the shop.</string>
+    <string name="moves_bought">+5 moves added!</string>
+    <string name="owned_count">Owned: %1$d</string>
+    <string name="max_lives_count">Owned: %1$d/5</string>
     <string name="color_red">Red</string>
     <string name="color_blue">Blue</string>
     <string name="color_yellow">Yellow</string>

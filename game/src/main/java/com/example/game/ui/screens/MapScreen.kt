@@ -27,21 +27,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.game.R
+import com.example.game.data.repository.GamePreferencesRepository
+import com.example.game.data.repository.UserPreferences
 import com.example.game.ui.components.LanguageSwitcher
 import com.example.game.ui.theme.GreenDark
 import com.example.game.ui.theme.GreenLight
 import com.example.game.ui.theme.GreenMedium
 import com.example.game.ui.theme.OrangeLight
-import androidx.compose.ui.res.stringResource
-import com.example.game.R
-
+import kotlinx.coroutines.delay
 
 @Composable
 fun MapScreen(
@@ -49,14 +57,42 @@ fun MapScreen(
     onShopClick: () -> Unit,
     onLevelClick: (Int) -> Unit
 ) {
-    val coinsCount = 500
-    val livesCount = 5
-    val timeToRestore = "0:00"
     val context = LocalContext.current
-    val currentLevel = 3
+    val repository = remember { GamePreferencesRepository(context) }
+    val userPrefs by repository.userPreferencesFlow.collectAsState(initial = UserPreferences())
+
+    var currentTimeMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTimeMs = System.currentTimeMillis()
+            repository.checkAndUpdateLifeRecovery(currentTimeMs)
+            delay(1000L)
+        }
+    }
+
+    val coinsCount = userPrefs.coins
+    val livesCount = userPrefs.lives
+    val currentLevel = userPrefs.currentLevel
+    val timeToRestore = repository.getRemainingRecoveryTimeFormatted(
+        lives = livesCount,
+        lastRecoveryTimestamp = userPrefs.lastRecoveryTimestamp,
+        currentTimeMs = currentTimeMs
+    )
+
+    val noLivesMsg = stringResource(R.string.no_lives_message)
+    val levelUnavailableMsg = stringResource(R.string.level_unavailable)
+
+    fun startLevel(levelId: Int) {
+        if (livesCount <= 0) {
+            Toast.makeText(context, noLivesMsg, Toast.LENGTH_SHORT).show()
+        } else {
+            onLevelClick(levelId)
+        }
+    }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(GreenLight)
             .padding(16.dp),
@@ -146,7 +182,6 @@ fun MapScreen(
             }
 
             LanguageSwitcher()
-
         }
 
         Column(
@@ -167,13 +202,9 @@ fun MapScreen(
                 OutlinedButton(
                     onClick = {
                         if (level <= currentLevel) {
-                            onLevelClick(level)
+                            startLevel(level)
                         } else {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.level_unavailable),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, levelUnavailableMsg, Toast.LENGTH_SHORT).show()
                         }
                     },
                     border = BorderStroke(2.dp, color = GreenDark),
@@ -194,7 +225,7 @@ fun MapScreen(
         }
 
         OutlinedButton(
-            onClick = { onLevelClick(currentLevel) },
+            onClick = { startLevel(currentLevel) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp),
@@ -206,8 +237,7 @@ fun MapScreen(
             Text(
                 stringResource(R.string.play),
                 fontSize = 25.sp
-                )
+            )
         }
-
     }
 }

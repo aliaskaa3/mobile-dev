@@ -1,6 +1,5 @@
 package com.example.game.ui.components
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,11 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.game.R
 import com.example.game.data.model.ShopItem
 import com.example.game.ui.theme.GreenLight
 import com.example.game.ui.theme.OrangeDark
@@ -42,12 +41,11 @@ import com.example.game.ui.theme.OrangeLight
 @Composable
 fun ShopItemCard(
     item: ShopItem,
-    coinsCount: Int,
-    onCoinsChanged: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    countText: String? = null,
+    onBuy: () -> Unit
 ) {
-    val context = LocalContext.current
-    val isEnough = coinsCount >= item.price
+    val lifeTitle = stringResource(R.string.life)
 
     Card(
         modifier = modifier
@@ -73,7 +71,7 @@ fun ShopItemCard(
                     imageVector = item.icon,
                     contentDescription = item.title,
                     modifier = Modifier.size(44.dp),
-                    tint = if (item.title == stringResource(com.example.game.R.string.life)) Color.Red else Color.Black
+                    tint = if (item.title == lifeTitle) Color.Red else Color.Black
                 )
             }
 
@@ -98,18 +96,21 @@ fun ShopItemCard(
                     fontSize = 12.sp,
                     color = OrangeDark.copy(alpha = 0.8f)
                 )
+                if (countText != null) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = countText,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = OrangeDark
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
             OutlinedButton(
-                onClick = {
-                    if (isEnough) {
-                        onCoinsChanged(coinsCount - item.price)
-                    } else {
-                        Toast.makeText(context, context.getString(com.example.game.R.string.not_enough_coins_message), Toast.LENGTH_SHORT).show()
-                    }
-                },
+                onClick = onBuy,
                 colors = ButtonDefaults.buttonColors(containerColor = OrangeLight),
                 border = BorderStroke(2.dp, OrangeDark),
                 shape = RoundedCornerShape(20.dp),
@@ -124,7 +125,7 @@ fun ShopItemCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.MonetizationOn,
-                        contentDescription = stringResource(com.example.game.R.string.coin_description),
+                        contentDescription = stringResource(R.string.coin_description),
                         tint = Color.Yellow,
                         modifier = Modifier.size(20.dp)
                     )

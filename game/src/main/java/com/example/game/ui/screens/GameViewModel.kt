@@ -27,14 +27,14 @@ class GameViewModel(
     )
         private set
 
-    fun onCellTap(index: Int) {
+    fun onCellTap(index: Int, onBoosterUsed: (BoosterType) -> Unit = {}) {
         val current = uiState
         val game = current.game
 
         if (game.status != GameStatus.PLAYING) return
         if (index !in game.cells.indices || game.cells[index] == null) return
 
-        when (current.pendingBooster) {
+        when (val booster = current.pendingBooster) {
             BoosterType.SWAP -> {
                 if (current.selectedCell == -1) {
                     uiState = current.copy(selectedCell = index)
@@ -47,27 +47,43 @@ class GameViewModel(
                         targetIndex = index
                     )
 
-                    uiState = current.copy(
-                        game = updated,
-                        selectedCell = -1,
-                        pendingBooster = null
-                    )
+                    if (updated != game) {
+                        uiState = current.copy(
+                            game = updated,
+                            selectedCell = -1,
+                            pendingBooster = null
+                        )
+                        onBoosterUsed(BoosterType.SWAP)
+                    } else {
+                        uiState = current.copy(
+                            selectedCell = -1,
+                            pendingBooster = null
+                        )
+                    }
                 }
             }
 
             BoosterType.HAMMER, BoosterType.CROSS_CLEAR -> {
                 val updated = engine.useBooster(
                     state = game,
-                    type = current.pendingBooster,
+                    type = booster,
                     index = index,
                     level = level
                 )
 
-                uiState = current.copy(
-                    game = updated,
-                    selectedCell = -1,
-                    pendingBooster = null
-                )
+                if (updated != game) {
+                    uiState = current.copy(
+                        game = updated,
+                        selectedCell = -1,
+                        pendingBooster = null
+                    )
+                    onBoosterUsed(booster)
+                } else {
+                    uiState = current.copy(
+                        selectedCell = -1,
+                        pendingBooster = null
+                    )
+                }
             }
 
             null -> {
@@ -98,6 +114,16 @@ class GameViewModel(
         uiState = uiState.copy(
             selectedCell = -1,
             pendingBooster = type
+        )
+    }
+
+    fun addExtraMoves(count: Int = 5) {
+        val current = uiState
+        uiState = current.copy(
+            game = current.game.copy(
+                movesLeft = current.game.movesLeft + count,
+                status = GameStatus.PLAYING
+            )
         )
     }
 

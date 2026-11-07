@@ -34,7 +34,7 @@
 
 
     <string name="result_buy_moves">+5 ходов</string>
-    <string name="result_buy_moves_cost">300</string>
+    <string name="result_buy_moves_cost">100</string>
 
     <string name="result_reward_amount">+%1$d</string>
     <string name="result_lost_life">-1</string>
@@ -43,6 +43,12 @@
     <string name="shop_description">Магазин</string>
     <string name="level_unavailable">Уровень недоступен</string>
     <string name="not_enough_coins_message">Не хватает монет!</string>
+    <string name="no_lives_message">У вас нет жизней! Подождите восстановления или купите в магазине.</string>
+    <string name="max_lives_reached">У вас уже максимум жизней!</string>
+    <string name="no_boosters_message">У вас нет этого бустера! Купите его в магазине.</string>
+    <string name="moves_bought">+5 ходов добавлено!</string>
+    <string name="owned_count">В наличии: %1$d</string>
+    <string name="max_lives_count">В наличии: %1$d/5</string>
     <string name="color_red">Красные</string>
     <string name="color_blue">Синие</string>
     <string name="color_yellow">Жёлтые</string>
