@@ -7,7 +7,7 @@
   "goals": [
     {
       "type": "COLLECT",
-      "color": "Yellow",
+      "color": "YELLOW",
       "target": 12
     },
     {

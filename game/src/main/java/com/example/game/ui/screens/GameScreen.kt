@@ -129,7 +129,9 @@ fun GameScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             InfoBox(

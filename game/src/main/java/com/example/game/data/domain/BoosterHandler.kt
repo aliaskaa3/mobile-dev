@@ -71,7 +71,8 @@ internal class BoosterHandler(
 
         return resolver.resolve(
             state.copy(cells = swappedCells),
-            level
+            level,
+            swappedIndex = targetIndex
         )
     }
 
@@ -96,36 +97,13 @@ internal class BoosterHandler(
         }
 
         val collected = state.collected.toMutableMap()
-        collected[cell.color.name] =
-            (collected[cell.color.name] ?: 0) + 1
+        collected[cell.color.name] = (collected[cell.color.name] ?: 0) + 1
+        cells[index] = null
 
-        val targetColumn = index % level.columns
-        var writeRow = index / level.columns
-
-        for (readRow in (writeRow - 1) downTo 0) {
-            val writeIndex = writeRow * level.columns + targetColumn
-            val readIndex = readRow * level.columns + targetColumn
-            val readCell = cells[readIndex]
-
-            if (readCell?.isFrozen == true) continue
-
-            if (cells[writeIndex]?.isFrozen == true) {
-                writeRow--
-                cells[writeRow * level.columns + targetColumn] = readCell
-            } else {
-                cells[writeIndex] = readCell
-            }
-
-            if (readRow != writeRow) {
-                cells[readIndex] = null
-            }
-
-            writeRow--
-        }
-
+        val refilled = resolver.refill(cells, level)
         return resolver.resolve(
             state.copy(
-                cells = resolver.refill(cells, level),
+                cells = refilled,
                 collected = collected
             ),
             level
@@ -157,39 +135,20 @@ internal class BoosterHandler(
                     cells[i] = cell.copy(isFrozen = false)
                     currentFrozenBroken++
                 } else {
-                    collected[cell.color.name] =
-                        (collected[cell.color.name] ?: 0) + 1
-
+                    collected[cell.color.name] = (collected[cell.color.name] ?: 0) + 1
                     cells[i] = null
                 }
             }
         }
 
-        val filledCells = resolver.refill(cells, level).toMutableList()
-
-        val structuralFrozenIndexes = filledCells.indices.filter {
-            filledCells[it]?.isFrozen == true
-        }
-
-        for (i in structuralFrozenIndexes) {
-            filledCells[i] = filledCells[i]?.copy(isFrozen = false)
-        }
-
-        val intermediateState = state.copy(
-            cells = filledCells,
-            collected = collected,
-            frozenBroken = currentFrozenBroken
+        val refilled = resolver.refill(cells, level)
+        return resolver.resolve(
+            state.copy(
+                cells = refilled,
+                collected = collected,
+                frozenBroken = currentFrozenBroken
+            ),
+            level
         )
-
-        val finalState = resolver.resolve(intermediateState, level)
-        val finalCells = finalState.cells.toMutableList()
-
-        for (i in structuralFrozenIndexes) {
-            if (i in finalCells.indices) {
-                finalCells[i] = finalCells[i]?.copy(isFrozen = true)
-            }
-        }
-
-        return finalState.copy(cells = finalCells)
     }
 }
