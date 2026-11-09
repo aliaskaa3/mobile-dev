@@ -1,0 +1,243 @@
+package com.example.game.ui.screens
+
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.game.R
+import com.example.game.data.repository.GamePreferencesRepository
+import com.example.game.data.repository.UserPreferences
+import com.example.game.ui.components.LanguageSwitcher
+import com.example.game.ui.theme.GreenDark
+import com.example.game.ui.theme.GreenLight
+import com.example.game.ui.theme.GreenMedium
+import com.example.game.ui.theme.OrangeLight
+import kotlinx.coroutines.delay
+
+@Composable
+fun MapScreen(
+    modifier: Modifier = Modifier,
+    onShopClick: () -> Unit,
+    onLevelClick: (Int) -> Unit
+) {
+    val context = LocalContext.current
+    val repository = remember { GamePreferencesRepository(context) }
+    val userPrefs by repository.userPreferencesFlow.collectAsState(initial = UserPreferences())
+
+    var currentTimeMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTimeMs = System.currentTimeMillis()
+            repository.checkAndUpdateLifeRecovery(currentTimeMs)
+            delay(1000L)
+        }
+    }
+
+    val coinsCount = userPrefs.coins
+    val livesCount = userPrefs.lives
+    val currentLevel = userPrefs.currentLevel
+    val timeToRestore = repository.getRemainingRecoveryTimeFormatted(
+        lives = livesCount,
+        lastRecoveryTimestamp = userPrefs.lastRecoveryTimestamp,
+        currentTimeMs = currentTimeMs
+    )
+
+    val noLivesMsg = stringResource(R.string.no_lives_message)
+    val levelUnavailableMsg = stringResource(R.string.level_unavailable)
+
+    fun startLevel(levelId: Int) {
+        if (livesCount <= 0) {
+            Toast.makeText(context, noLivesMsg, Toast.LENGTH_SHORT).show()
+        } else {
+            onLevelClick(levelId)
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(GreenLight)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier
+                    .width(170.dp)
+                    .height(70.dp)
+                    .background(Color.White, RoundedCornerShape(12.dp))
+                    .border(2.dp, GreenDark, shape = RoundedCornerShape(12.dp)),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MonetizationOn,
+                    contentDescription = stringResource(R.string.coin_description),
+                    tint = Color.Yellow,
+                    modifier = Modifier.size(40.dp)
+                )
+                Text(
+                    text = coinsCount.toString(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = GreenDark
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .width(170.dp)
+                    .height(70.dp)
+                    .background(Color.White, RoundedCornerShape(12.dp))
+                    .border(2.dp, GreenDark, shape = RoundedCornerShape(12.dp)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Box {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = stringResource(R.string.heart_description),
+                        tint = Color.Red,
+                        modifier = Modifier.size(45.dp)
+                    )
+                    Text(
+                        "  $livesCount",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                Text(
+                    timeToRestore,
+                    fontSize = 20.sp,
+                    color = GreenDark,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            OutlinedButton(
+                onClick = onShopClick,
+                border = BorderStroke(2.dp, GreenDark),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ShoppingCart,
+                    contentDescription = stringResource(R.string.shop_description),
+                    tint = Color.White,
+                    modifier = Modifier.size(25.dp)
+                )
+            }
+
+            LanguageSwitcher()
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(bottom = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            (5 downTo 1).forEach { level ->
+                val buttonColor = when {
+                    level < currentLevel -> GreenMedium
+                    level == currentLevel -> OrangeLight
+                    else -> Color.LightGray
+                }
+                val offset = if (level % 2 == 0) 80.dp else (-80).dp
+
+                OutlinedButton(
+                    onClick = {
+                        if (level <= currentLevel) {
+                            startLevel(level)
+                        } else {
+                            Toast.makeText(context, levelUnavailableMsg, Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    border = BorderStroke(2.dp, color = GreenDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .offset(x = offset)
+                        .padding(4.dp)
+                ) {
+                    Text(
+                        level.toString(),
+                        color = Color.White,
+                        fontSize = 40.sp
+                    )
+                }
+            }
+        }
+
+        OutlinedButton(
+            onClick = { startLevel(currentLevel) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
+            border = BorderStroke(2.dp, GreenDark),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            Text(
+                stringResource(R.string.play),
+                fontSize = 25.sp
+            )
+        }
+    }
+}

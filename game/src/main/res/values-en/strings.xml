@@ -1,0 +1,59 @@
+<resources>
+    <string name="app_name">Gem Match</string>
+
+    <string name="language">Language</string>
+
+    <string name="replace">Replace</string>
+    <string name="cross_clear">Cross blast</string>
+    <string name="hammer">Hammer</string>
+    <string name="life">Life</string>
+    <string name="swap_description">Swaps adjacent pieces</string>
+    <string name="cross_clear_description">Clears all pieces in a row and column</string>
+    <string name="hammer_description">Clears one selected piece</string>
+    <string name="life_description">Adds one life</string>
+
+    <string name="level">Level</string>
+    <string name="shop_title">Shop</string>
+    <string name="play">Play</string>
+    <string name="back">Back</string>
+    <string name="coins">Coins</string>
+    <string name="lives">Lives</string>
+
+    <string name="moves">Moves</string>
+    <string name="goals">Goals</string>
+
+
+    <string name="buy">Buy</string>
+    <string name="not_enough_coins">Not enough coins</string>
+
+
+    <string name="result_win">Victory!</string>
+    <string name="result_loss">Not this time...</string>
+    <string name="result_reward">Reward:</string>
+
+
+    <string name="result_buy_moves">+5 moves</string>
+    <string name="result_buy_moves_cost">100</string>
+
+    <string name="result_reward_amount">+%1$d</string>
+    <string name="result_lost_life">-1</string>
+    <string name="coin_description">Coin</string>
+    <string name="heart_description">Heart</string>
+    <string name="shop_description">Shop</string>
+    <string name="level_unavailable">Level unavailable</string>
+    <string name="not_enough_coins_message">Not enough coins!</string>
+    <string name="no_lives_message">You have no lives! Wait for recovery or buy in the shop.</string>
+    <string name="max_lives_reached">You already have maximum lives!</string>
+    <string name="no_boosters_message">You don\'t have this booster! Buy it in the shop.</string>
+    <string name="moves_bought">+5 moves added!</string>
+    <string name="owned_count">Owned: %1$d</string>
+    <string name="max_lives_count">Owned: %1$d/5</string>
+    <string name="color_red">Red</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_green">Green</string>
+    <string name="color_pink">Pink</string>
+    <string name="chips">Pieces</string>
+    <string name="goal_progress">%1$s: %2$d/%3$d</string>
+    <string name="ice_progress">Ice: %1$d/%2$d</string>
+</resources>
