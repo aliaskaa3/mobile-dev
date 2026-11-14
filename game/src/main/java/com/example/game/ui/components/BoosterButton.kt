@@ -1,6 +1,7 @@
 package com.example.game.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -28,7 +29,8 @@ fun BoosterButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String,
-    count: Int = 0
+    count: Int = 0,
+    isSelected: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -36,6 +38,15 @@ fun BoosterButton(
             .background(
                 color = OrangeLight,
                 shape = RoundedCornerShape(12.dp)
+            )
+            .then(
+                if (isSelected) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = OrangeDark,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                } else Modifier
             )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center

@@ -125,9 +125,10 @@ class GameViewModel(
     fun activateBooster(type: BoosterType) {
         if (uiState.game.status != GameStatus.PLAYING) return
 
+        val nextPending = if (uiState.pendingBooster == type) null else type
         uiState = uiState.copy(
             selectedCell = -1,
-            pendingBooster = type
+            pendingBooster = nextPending
         )
     }
 

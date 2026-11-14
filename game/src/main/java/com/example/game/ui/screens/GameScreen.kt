@@ -194,10 +194,13 @@ fun GameScreen(
                     BoosterType.HAMMER -> userPrefs.hammerBoosters
                 }
 
+                val isSelected = uiState.pendingBooster == booster.type
+
                 BoosterButton(
                     icon = booster.icon,
                     contentDescription = booster.contentDescription,
                     count = count,
+                    isSelected = isSelected,
                     onClick = {
                         if (game.status == GameStatus.PLAYING) {
                             if (count > 0) {
