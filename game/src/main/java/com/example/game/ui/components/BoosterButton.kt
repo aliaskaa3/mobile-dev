@@ -3,6 +3,7 @@ package com.example.game.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,14 +51,16 @@ fun BoosterButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(x = (-2).dp, y = (-2).dp)
-                .background(OrangeDark, CircleShape)
-                .padding(horizontal = 5.dp, vertical = 2.dp),
+                .background(OrangeDark, RoundedCornerShape(8.dp))
+                .padding(horizontal = 5.dp)
+                .height(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "x$count",
                 color = Color.White,
                 fontSize = 11.sp,
+                lineHeight = 11.sp,
                 fontWeight = FontWeight.Bold
             )
         }

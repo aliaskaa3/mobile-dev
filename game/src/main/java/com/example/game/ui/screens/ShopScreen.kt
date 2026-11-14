@@ -145,6 +145,7 @@ fun ShopScreen(
                 ShopItemCard(
                     item = shopItem,
                     countText = countText,
+                    hasEnoughCoins = userPrefs.coins >= shopItem.price,
                     onBuy = {
                         scope.launch {
                             when (shopItem.title) {

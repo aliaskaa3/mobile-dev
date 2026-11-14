@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,9 +44,11 @@ fun ShopItemCard(
     item: ShopItem,
     modifier: Modifier = Modifier,
     countText: String? = null,
+    hasEnoughCoins: Boolean = true,
     onBuy: () -> Unit
 ) {
     val lifeTitle = stringResource(R.string.life)
+    val isLife = item.title == lifeTitle
 
     Card(
         modifier = modifier
@@ -71,8 +74,28 @@ fun ShopItemCard(
                     imageVector = item.icon,
                     contentDescription = item.title,
                     modifier = Modifier.size(44.dp),
-                    tint = if (item.title == lifeTitle) Color.Red else Color.Black
+                    tint = if (isLife) Color.Red else Color.Black
                 )
+
+                if (countText != null && !isLife) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = (-2).dp, y = (-2).dp)
+                            .background(OrangeDark, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 5.dp)
+                            .height(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = countText,
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            lineHeight = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -96,7 +119,7 @@ fun ShopItemCard(
                     fontSize = 12.sp,
                     color = OrangeDark.copy(alpha = 0.8f)
                 )
-                if (countText != null) {
+                if (countText != null && isLife) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = countText,
@@ -111,8 +134,11 @@ fun ShopItemCard(
 
             OutlinedButton(
                 onClick = onBuy,
-                colors = ButtonDefaults.buttonColors(containerColor = OrangeLight),
-                border = BorderStroke(2.dp, OrangeDark),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (hasEnoughCoins) OrangeLight else Color.Gray,
+                    contentColor = Color.White
+                ),
+                border = BorderStroke(2.dp, if (hasEnoughCoins) OrangeDark else Color.DarkGray),
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .width(80.dp)

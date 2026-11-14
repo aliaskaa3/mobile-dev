@@ -36,11 +36,14 @@ fun LevelResultDialog(
     onRetry: () -> Unit,
     onNextLevel: () -> Unit,
     onMap: () -> Unit,
-    onBuyMoves: () -> Unit = {}
+    onBuyMoves: () -> Unit = {},
+    userCoins: Int = 0,
+    movesCost: Int = 100
 ) {
     if (status == GameStatus.PLAYING) return
 
     val won = status == GameStatus.WON
+    val canAffordMoves = userCoins >= movesCost
 
     Dialog(
         onDismissRequest = {},
@@ -144,8 +147,8 @@ fun LevelResultDialog(
                         Box(
                             modifier = Modifier
                                 .size(width = 75.dp, height = 60.dp)
-                                .background(GreenMedium, shape = RoundedCornerShape(16.dp))
-                                .border(2.dp, OrangeDark, shape = RoundedCornerShape(16.dp))
+                                .background(if (canAffordMoves) GreenMedium else Color.Gray, shape = RoundedCornerShape(16.dp))
+                                .border(2.dp, if (canAffordMoves) OrangeDark else Color.DarkGray, shape = RoundedCornerShape(16.dp))
                                 .clickable { onBuyMoves() }
                                 .padding(4.dp),
                             contentAlignment = Alignment.Center

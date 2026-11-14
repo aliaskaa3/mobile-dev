@@ -217,6 +217,8 @@ fun GameScreen(
         LevelResultDialog(
             status = game.status,
             reward = LEVEL_REWARD,
+            userCoins = userPrefs.coins,
+            movesCost = GamePreferencesRepository.EXTRA_MOVES_COST,
             onRetry = {
                 scope.launch {
                     val remainingLives = userPrefs.lives
