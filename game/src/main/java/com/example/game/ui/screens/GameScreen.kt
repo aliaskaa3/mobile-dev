@@ -1,6 +1,5 @@
 package com.example.game.ui.screens
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.game.R
 import com.example.game.data.model.BoosterType
 import com.example.game.data.model.GameStatus
-import com.example.game.data.model.LevelGoal
 import com.example.game.data.repository.BoosterRepository
 import com.example.game.data.repository.GamePreferencesRepository
 import com.example.game.data.repository.LevelRepository
@@ -42,6 +40,7 @@ import com.example.game.data.repository.UserPreferences
 import com.example.game.data.utils.cellColor
 import com.example.game.ui.components.AnimatedGameBoard
 import com.example.game.ui.components.BoosterButton
+import com.example.game.ui.components.GoalsDisplay
 import com.example.game.ui.components.InfoBox
 import com.example.game.ui.components.LevelResultDialog
 import com.example.game.ui.theme.GreenLight
@@ -111,15 +110,6 @@ fun GameScreen(
         }
     }
 
-    val goalText = level.goals.joinToString("\n") { goal ->
-        formatGoal(
-            goal = goal,
-            collected = game.collected,
-            frozenBroken = game.frozenBroken,
-            context = context
-        )
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -144,9 +134,14 @@ fun GameScreen(
 
             InfoBox(
                 title = stringResource(R.string.goals),
-                value = goalText,
                 modifier = Modifier.weight(1f)
-            )
+            ) {
+                GoalsDisplay(
+                    goals = level.goals,
+                    collected = game.collected,
+                    frozenBroken = game.frozenBroken
+                )
+            }
 
             Spacer(modifier = Modifier.width(6.dp))
 
@@ -260,34 +255,5 @@ fun GameScreen(
                 }
             }
         )
-    }
-}
-
-private fun formatGoal(
-    goal: LevelGoal,
-    collected: Map<String, Int>,
-    frozenBroken: Int,
-    context: Context
-): String {
-    return when (goal.type) {
-        "COLLECT" -> {
-            val current = collected[goal.color] ?: 0
-            val colorName = when (goal.color) {
-                "RED" -> context.getString(R.string.color_red)
-                "BLUE" -> context.getString(R.string.color_blue)
-                "YELLOW" -> context.getString(R.string.color_yellow)
-                "GREEN" -> context.getString(R.string.color_green)
-                "PINK" -> context.getString(R.string.color_pink)
-                else -> context.getString(R.string.chips)
-            }
-
-            context.getString(R.string.goal_progress, colorName, current, goal.target)
-        }
-
-        "BREAK_FROZEN" ->
-            context.getString(R.string.ice_progress, frozenBroken, goal.target)
-
-        else ->
-            "${goal.type}: ${goal.target}"
     }
 }

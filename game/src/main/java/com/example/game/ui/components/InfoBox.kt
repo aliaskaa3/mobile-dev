@@ -21,13 +21,10 @@ import com.example.game.ui.theme.OrangeDark
 @Composable
 fun InfoBox(
     title: String,
-    value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    value: String? = null,
+    content: (@Composable () -> Unit)? = null
 ) {
-    val isMultiLine = value.contains("\n") || value.length > 14
-    val fontSize = if (isMultiLine) 11.sp else 16.sp
-    val lineHeight = if (isMultiLine) 13.sp else 18.sp
-
     Column(
         modifier = modifier
             .heightIn(min = 65.dp)
@@ -45,14 +42,22 @@ fun InfoBox(
             textAlign = TextAlign.Center
         )
 
-        Text(
-            text = value,
-            fontSize = fontSize,
-            lineHeight = lineHeight,
-            color = OrangeDark,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            maxLines = 4
-        )
+        if (content != null) {
+            content()
+        } else if (value != null) {
+            val isMultiLine = value.contains("\n") || value.length > 14
+            val fontSize = if (isMultiLine) 11.sp else 16.sp
+            val lineHeight = if (isMultiLine) 13.sp else 18.sp
+
+            Text(
+                text = value,
+                fontSize = fontSize,
+                lineHeight = lineHeight,
+                color = OrangeDark,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 4
+            )
+        }
     }
 }
