@@ -1,5 +1,7 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -39,8 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.game.data.model.GameCell
 import com.example.game.data.model.SpecialType
-import com.example.game.ui.theme.OrangeDark
-import com.example.game.ui.theme.OrangeLight
 
 @Composable
 fun AnimatedGameBoard(
@@ -56,8 +56,8 @@ fun AnimatedGameBoard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(16.dp))
-            .border(2.dp, OrangeDark, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+            .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
             .padding(6.dp),
         verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
@@ -178,11 +178,11 @@ private fun AnimatedGameCell(
     }
 
     val borderColor = when {
-        selected -> OrangeDark
+        selected -> MaterialTheme.colorScheme.secondary
         displayedCell?.specialType == SpecialType.DISCO_BALL -> Color.Yellow
         displayedCell?.specialType == SpecialType.BOMB -> Color.Red
         displayedCell?.specialType == SpecialType.AIRPLANE -> Color.Blue
-        else -> OrangeLight
+        else -> MaterialTheme.colorScheme.tertiary
     }
 
     val borderWidth = when {
@@ -202,7 +202,7 @@ private fun AnimatedGameCell(
             .rotate(finalRotation)
             .background(
                 color = if (displayedCell == null) {
-                    Color.White
+                    MaterialTheme.colorScheme.surface
                 } else {
                     color
                 },

@@ -1,5 +1,7 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.game.data.model.LevelGoal
 import com.example.game.data.utils.goalColor
-import com.example.game.ui.theme.OrangeDark
 
 @Composable
 fun GoalsDisplay(
@@ -71,8 +72,8 @@ fun GoalItem(
             Box(
                 modifier = Modifier
                     .size(16.dp)
-                    .background(Color.White, CircleShape)
-                    .border(1.dp, OrangeDark, CircleShape),
+                    .background(MaterialTheme.colorScheme.surface, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -88,8 +89,8 @@ fun GoalItem(
             Box(
                 modifier = Modifier
                     .size(14.dp)
-                    .background(goalColor(goal.color), CircleShape)
-                    .border(1.dp, OrangeDark, CircleShape)
+                    .background(goalColor(goal.color, MaterialTheme.colorScheme.primary), CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
             )
         }
 
@@ -97,7 +98,7 @@ fun GoalItem(
 
         Text(
             text = "$current/${goal.target}",
-            color = OrangeDark,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold
         )

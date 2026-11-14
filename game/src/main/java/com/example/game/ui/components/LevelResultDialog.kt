@@ -1,5 +1,7 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,8 +28,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.game.data.model.GameStatus
 import com.example.game.R
-import com.example.game.ui.theme.GreenMedium
-import com.example.game.ui.theme.OrangeDark
 
 @Composable
 fun LevelResultDialog(
@@ -53,8 +53,8 @@ fun LevelResultDialog(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
                 .aspectRatio(0.82f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .border(2.dp, OrangeDark, shape = RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
+                .border(2.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp))
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -65,7 +65,7 @@ fun LevelResultDialog(
             ) {
                 Text(
                     text = if (won) stringResource(R.string.result_win) else stringResource(R.string.result_loss),
-                    color = OrangeDark,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Normal
                 )
@@ -74,7 +74,7 @@ fun LevelResultDialog(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = stringResource(R.string.result_reward),
-                            color = OrangeDark,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 18.sp
                         )
                         Spacer(modifier = Modifier.height(12.dp))
@@ -82,8 +82,8 @@ fun LevelResultDialog(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                                .border(2.dp, OrangeDark, shape = RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
+                                .border(2.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp))
                                 .padding(horizontal = 20.dp, vertical = 8.dp)
                         ) {
                             Icon(
@@ -95,7 +95,7 @@ fun LevelResultDialog(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = stringResource(R.string.result_reward_amount, reward),
-                                color = OrangeDark,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -117,7 +117,7 @@ fun LevelResultDialog(
 
                         Text(
                             text = stringResource(R.string.result_lost_life),
-                            color = OrangeDark,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 38.sp
                         )
                     }
@@ -147,8 +147,8 @@ fun LevelResultDialog(
                         Box(
                             modifier = Modifier
                                 .size(width = 75.dp, height = 60.dp)
-                                .background(if (canAffordMoves) GreenMedium else Color.Gray, shape = RoundedCornerShape(16.dp))
-                                .border(2.dp, if (canAffordMoves) OrangeDark else Color.DarkGray, shape = RoundedCornerShape(16.dp))
+                                .background(if (canAffordMoves) MaterialTheme.colorScheme.primary else Color.Gray, shape = RoundedCornerShape(16.dp))
+                                .border(2.dp, if (canAffordMoves) MaterialTheme.colorScheme.secondary else Color.DarkGray, shape = RoundedCornerShape(16.dp))
                                 .clickable { onBuyMoves() }
                                 .padding(4.dp),
                             contentAlignment = Alignment.Center
@@ -195,8 +195,8 @@ fun DialogIconButton(
     Box(
         modifier = Modifier
             .size(width = 75.dp, height = 60.dp)
-            .background(GreenMedium, shape = RoundedCornerShape(14.dp))
-            .border(2.dp, OrangeDark, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(14.dp))
+            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {

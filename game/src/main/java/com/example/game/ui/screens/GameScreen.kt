@@ -1,5 +1,7 @@
 package com.example.game.ui.screens
 
+import androidx.compose.material3.MaterialTheme
+
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,8 +45,6 @@ import com.example.game.ui.components.BoosterButton
 import com.example.game.ui.components.GoalsDisplay
 import com.example.game.ui.components.InfoBox
 import com.example.game.ui.components.LevelResultDialog
-import com.example.game.ui.theme.GreenLight
-import com.example.game.ui.theme.OrangeDark
 import kotlinx.coroutines.launch
 
 private const val LEVEL_REWARD = 50
@@ -60,6 +60,7 @@ fun GameScreen(
     onRewardEarned: (Int) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val themeColors = MaterialTheme.colorScheme
     val repository = remember { GamePreferencesRepository(context) }
     val userPrefs by repository.userPreferencesFlow.collectAsState(initial = UserPreferences())
     val scope = rememberCoroutineScope()
@@ -113,7 +114,7 @@ fun GameScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(GreenLight)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
             .padding(top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -166,7 +167,7 @@ fun GameScreen(
                     }
                 }
             },
-            cellColor = { cell -> cellColor(cell.color) },
+            cellColor = { cell -> cellColor(cell.color, themeColors.primary) },
             enabled = game.status == GameStatus.PLAYING
         )
 
@@ -176,8 +177,8 @@ fun GameScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(82.dp)
-                .background(Color.White, RoundedCornerShape(16.dp))
-                .border(2.dp, OrangeDark, RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically

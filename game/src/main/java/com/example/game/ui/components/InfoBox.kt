@@ -1,5 +1,7 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,12 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.game.ui.theme.OrangeDark
 
 @Composable
 fun InfoBox(
@@ -28,8 +28,8 @@ fun InfoBox(
     Column(
         modifier = modifier
             .heightIn(min = 65.dp)
-            .background(Color.White, RoundedCornerShape(12.dp))
-            .border(2.dp, OrangeDark, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+            .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
             .padding(horizontal = 4.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -37,7 +37,7 @@ fun InfoBox(
         Text(
             text = title,
             fontSize = 11.sp,
-            color = OrangeDark,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center
         )
@@ -53,7 +53,7 @@ fun InfoBox(
                 text = value,
                 fontSize = fontSize,
                 lineHeight = lineHeight,
-                color = OrangeDark,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 maxLines = 4

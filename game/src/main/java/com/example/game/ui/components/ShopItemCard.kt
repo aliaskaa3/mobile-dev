@@ -1,5 +1,7 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.game.R
 import com.example.game.data.model.ShopItem
-import com.example.game.ui.theme.GreenLight
-import com.example.game.ui.theme.OrangeDark
-import com.example.game.ui.theme.OrangeLight
 
 @Composable
 fun ShopItemCard(
@@ -55,8 +54,8 @@ fun ShopItemCard(
             .fillMaxWidth()
             .height(100.dp),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(2.dp, OrangeLight),
-        colors = CardDefaults.cardColors(containerColor = GreenLight)
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
         Row(
             modifier = Modifier
@@ -67,7 +66,7 @@ fun ShopItemCard(
             Box(
                 modifier = Modifier
                     .size(76.dp)
-                    .background(Color.White, RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -82,7 +81,7 @@ fun ShopItemCard(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .offset(x = (-2).dp, y = (-2).dp)
-                            .background(OrangeDark, RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(8.dp))
                             .padding(horizontal = 5.dp)
                             .height(16.dp),
                         contentAlignment = Alignment.Center
@@ -111,13 +110,13 @@ fun ShopItemCard(
                     fontSize = 16.sp,
                     lineHeight = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = OrangeDark
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = item.description,
                     fontSize = 12.sp,
-                    color = OrangeDark.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
                 )
                 if (countText != null && isLife) {
                     Spacer(modifier = Modifier.height(2.dp))
@@ -125,7 +124,7 @@ fun ShopItemCard(
                         text = countText,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = OrangeDark
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -135,10 +134,10 @@ fun ShopItemCard(
             OutlinedButton(
                 onClick = onBuy,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (hasEnoughCoins) OrangeLight else Color.Gray,
+                    containerColor = if (hasEnoughCoins) MaterialTheme.colorScheme.tertiary else Color.Gray,
                     contentColor = Color.White
                 ),
-                border = BorderStroke(2.dp, if (hasEnoughCoins) OrangeDark else Color.DarkGray),
+                border = BorderStroke(2.dp, if (hasEnoughCoins) MaterialTheme.colorScheme.secondary else Color.DarkGray),
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .width(80.dp)
