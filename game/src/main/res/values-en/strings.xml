@@ -46,7 +46,7 @@
     <string name="max_lives_reached">You already have maximum lives!</string>
     <string name="no_boosters_message">You don\'t have this booster! Buy it in the shop.</string>
     <string name="moves_bought">+5 moves added!</string>
-    <string name="owned_count">Owned: %1$d</string>
+    <string name="owned_count">x%1$d</string>
     <string name="max_lives_count">Owned: %1$d/5</string>
     <string name="color_red">Red</string>
     <string name="color_blue">Blue</string>

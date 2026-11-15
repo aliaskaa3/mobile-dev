@@ -2,16 +2,21 @@ package com.example.game.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val LightOrangeLight = Color(0xFFFFC292)
+val LightOrangeDark = Color(0xFFF27E24)
+val LightGreenLight = Color(0xFFE0EECD)
+val LightGreenMedium = Color(0xFF6DAF6F)
+val LightGreenDark = Color(0xFF538F56)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val DarkOrangeLight = Color(0xFFD8894E)
+val DarkOrangeDark = Color(0xFFFF9800)
+val DarkGreenLight = Color(0xFF142115)
+val DarkGreenMedium = Color(0xFF388E3C)
+val DarkGreenDark = Color(0xFF81C784)
+val DarkSurface = Color(0xFF1F3021)
 
-val OrangeLight = Color(0xFFFFC292)
-val OrangeDark = Color(0xFFF27E24)
-val GreenLight = Color(0xFFE0EECD)
-val GreenMedium = Color(0xFF6DAF6F)
-val GreenDark = Color(0xFF538F56)
+val OrangeLight = LightOrangeLight
+val OrangeDark = LightOrangeDark
+val GreenLight = LightGreenLight
+val GreenMedium = LightGreenMedium
+val GreenDark = LightGreenDark

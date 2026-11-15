@@ -47,7 +47,7 @@
     <string name="max_lives_reached">У вас уже максимум жизней!</string>
     <string name="no_boosters_message">У вас нет этого бустера! Купите его в магазине.</string>
     <string name="moves_bought">+5 ходов добавлено!</string>
-    <string name="owned_count">В наличии: %1$d</string>
+    <string name="owned_count">x%1$d</string>
     <string name="max_lives_count">В наличии: %1$d/5</string>
     <string name="color_red">Красные</string>
     <string name="color_blue">Синие</string>

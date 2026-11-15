@@ -1,5 +1,7 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,8 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.game.data.repository.GamePreferencesRepository
 import com.example.game.data.utils.LocaleHelper
-import com.example.game.ui.theme.GreenDark
-import com.example.game.ui.theme.GreenMedium
 import kotlinx.coroutines.launch
 
 @Composable
@@ -33,9 +33,9 @@ fun LanguageSwitcher() {
                 (context as? Activity)?.recreate()
             }
         },
-        border = BorderStroke(2.dp, GreenDark),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurfaceVariant),
         shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
         Text(text = targetLabel, fontSize = 20.sp)
     }

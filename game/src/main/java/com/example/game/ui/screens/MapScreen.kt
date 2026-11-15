@@ -1,5 +1,7 @@
 package com.example.game.ui.screens
 
+import androidx.compose.material3.MaterialTheme
+
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -45,10 +47,6 @@ import com.example.game.R
 import com.example.game.data.repository.GamePreferencesRepository
 import com.example.game.data.repository.UserPreferences
 import com.example.game.ui.components.LanguageSwitcher
-import com.example.game.ui.theme.GreenDark
-import com.example.game.ui.theme.GreenLight
-import com.example.game.ui.theme.GreenMedium
-import com.example.game.ui.theme.OrangeLight
 import kotlinx.coroutines.delay
 
 @Composable
@@ -94,7 +92,7 @@ fun MapScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(GreenLight)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -109,8 +107,8 @@ fun MapScreen(
                 modifier = Modifier
                     .width(170.dp)
                     .height(70.dp)
-                    .background(Color.White, RoundedCornerShape(12.dp))
-                    .border(2.dp, GreenDark, shape = RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, shape = RoundedCornerShape(12.dp)),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -124,7 +122,7 @@ fun MapScreen(
                     text = coinsCount.toString(),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = GreenDark
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -132,8 +130,8 @@ fun MapScreen(
                 modifier = Modifier
                     .width(170.dp)
                     .height(70.dp)
-                    .background(Color.White, RoundedCornerShape(12.dp))
-                    .border(2.dp, GreenDark, shape = RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, shape = RoundedCornerShape(12.dp)),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -155,7 +153,7 @@ fun MapScreen(
                 Text(
                     timeToRestore,
                     fontSize = 20.sp,
-                    color = GreenDark,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -169,9 +167,9 @@ fun MapScreen(
         ) {
             OutlinedButton(
                 onClick = onShopClick,
-                border = BorderStroke(2.dp, GreenDark),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurfaceVariant),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             ) {
                 Icon(
                     imageVector = Icons.Filled.ShoppingCart,
@@ -193,8 +191,8 @@ fun MapScreen(
         ) {
             (5 downTo 1).forEach { level ->
                 val buttonColor = when {
-                    level < currentLevel -> GreenMedium
-                    level == currentLevel -> OrangeLight
+                    level < currentLevel -> MaterialTheme.colorScheme.primary
+                    level == currentLevel -> MaterialTheme.colorScheme.tertiary
                     else -> Color.LightGray
                 }
                 val offset = if (level % 2 == 0) 80.dp else (-80).dp
@@ -207,7 +205,7 @@ fun MapScreen(
                             Toast.makeText(context, levelUnavailableMsg, Toast.LENGTH_SHORT).show()
                         }
                     },
-                    border = BorderStroke(2.dp, color = GreenDark),
+                    border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.onSurfaceVariant),
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     shape = CircleShape,
                     modifier = Modifier
@@ -229,9 +227,9 @@ fun MapScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp),
-            border = BorderStroke(2.dp, GreenDark),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurfaceVariant),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = GreenMedium),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             contentPadding = PaddingValues(16.dp)
         ) {
             Text(

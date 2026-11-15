@@ -1,6 +1,7 @@
 package com.example.game.ui.screens
 
-import android.content.Context
+import androidx.compose.material3.MaterialTheme
+
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +35,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.game.R
 import com.example.game.data.model.BoosterType
 import com.example.game.data.model.GameStatus
-import com.example.game.data.model.LevelGoal
 import com.example.game.data.repository.BoosterRepository
 import com.example.game.data.repository.GamePreferencesRepository
 import com.example.game.data.repository.LevelRepository
@@ -42,10 +42,9 @@ import com.example.game.data.repository.UserPreferences
 import com.example.game.data.utils.cellColor
 import com.example.game.ui.components.AnimatedGameBoard
 import com.example.game.ui.components.BoosterButton
+import com.example.game.ui.components.GoalsDisplay
 import com.example.game.ui.components.InfoBox
 import com.example.game.ui.components.LevelResultDialog
-import com.example.game.ui.theme.GreenLight
-import com.example.game.ui.theme.OrangeDark
 import kotlinx.coroutines.launch
 
 private const val LEVEL_REWARD = 50
@@ -61,6 +60,7 @@ fun GameScreen(
     onRewardEarned: (Int) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val themeColors = MaterialTheme.colorScheme
     val repository = remember { GamePreferencesRepository(context) }
     val userPrefs by repository.userPreferencesFlow.collectAsState(initial = UserPreferences())
     val scope = rememberCoroutineScope()
@@ -111,19 +111,10 @@ fun GameScreen(
         }
     }
 
-    val goalText = level.goals.joinToString("\n") { goal ->
-        formatGoal(
-            goal = goal,
-            collected = game.collected,
-            frozenBroken = game.frozenBroken,
-            context = context
-        )
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(GreenLight)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
             .padding(top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -144,9 +135,14 @@ fun GameScreen(
 
             InfoBox(
                 title = stringResource(R.string.goals),
-                value = goalText,
                 modifier = Modifier.weight(1f)
-            )
+            ) {
+                GoalsDisplay(
+                    goals = level.goals,
+                    collected = game.collected,
+                    frozenBroken = game.frozenBroken
+                )
+            }
 
             Spacer(modifier = Modifier.width(6.dp))
 
@@ -171,7 +167,7 @@ fun GameScreen(
                     }
                 }
             },
-            cellColor = { cell -> cellColor(cell.color) },
+            cellColor = { cell -> cellColor(cell.color, themeColors.primary) },
             enabled = game.status == GameStatus.PLAYING
         )
 
@@ -181,8 +177,8 @@ fun GameScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(82.dp)
-                .background(Color.White, RoundedCornerShape(16.dp))
-                .border(2.dp, OrangeDark, RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
@@ -194,10 +190,13 @@ fun GameScreen(
                     BoosterType.HAMMER -> userPrefs.hammerBoosters
                 }
 
+                val isSelected = uiState.pendingBooster == booster.type
+
                 BoosterButton(
                     icon = booster.icon,
                     contentDescription = booster.contentDescription,
                     count = count,
+                    isSelected = isSelected,
                     onClick = {
                         if (game.status == GameStatus.PLAYING) {
                             if (count > 0) {
@@ -217,6 +216,8 @@ fun GameScreen(
         LevelResultDialog(
             status = game.status,
             reward = LEVEL_REWARD,
+            userCoins = userPrefs.coins,
+            movesCost = GamePreferencesRepository.EXTRA_MOVES_COST,
             onRetry = {
                 scope.launch {
                     val remainingLives = userPrefs.lives
@@ -255,34 +256,5 @@ fun GameScreen(
                 }
             }
         )
-    }
-}
-
-private fun formatGoal(
-    goal: LevelGoal,
-    collected: Map<String, Int>,
-    frozenBroken: Int,
-    context: Context
-): String {
-    return when (goal.type) {
-        "COLLECT" -> {
-            val current = collected[goal.color] ?: 0
-            val colorName = when (goal.color) {
-                "RED" -> context.getString(R.string.color_red)
-                "BLUE" -> context.getString(R.string.color_blue)
-                "YELLOW" -> context.getString(R.string.color_yellow)
-                "GREEN" -> context.getString(R.string.color_green)
-                "PINK" -> context.getString(R.string.color_pink)
-                else -> context.getString(R.string.chips)
-            }
-
-            context.getString(R.string.goal_progress, colorName, current, goal.target)
-        }
-
-        "BREAK_FROZEN" ->
-            context.getString(R.string.ice_progress, frozenBroken, goal.target)
-
-        else ->
-            "${goal.type}: ${goal.target}"
     }
 }
