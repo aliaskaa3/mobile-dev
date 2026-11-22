@@ -1,8 +1,12 @@
 package com.example.game.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,8 +22,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.game.ui.theme.OrangeDark
-import com.example.game.ui.theme.OrangeLight
 
 @Composable
 fun BoosterButton(
@@ -27,14 +29,24 @@ fun BoosterButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String,
-    count: Int = 0
+    count: Int = 0,
+    isSelected: Boolean = false
 ) {
     Box(
         modifier = modifier
             .size(65.dp)
             .background(
-                color = OrangeLight,
+                color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(12.dp)
+            )
+            .then(
+                if (isSelected) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                } else Modifier
             )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
@@ -42,7 +54,7 @@ fun BoosterButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = Color.Black,
+            tint = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.size(30.dp)
         )
 
@@ -50,14 +62,16 @@ fun BoosterButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(x = (-2).dp, y = (-2).dp)
-                .background(OrangeDark, CircleShape)
-                .padding(horizontal = 5.dp, vertical = 2.dp),
+                .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(8.dp))
+                .padding(horizontal = 5.dp)
+                .height(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "x$count",
                 color = Color.White,
                 fontSize = 11.sp,
+                lineHeight = 11.sp,
                 fontWeight = FontWeight.Bold
             )
         }

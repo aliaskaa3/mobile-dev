@@ -1,7 +1,10 @@
 package com.example.game.ui.screens
 
+import androidx.compose.material3.MaterialTheme
+
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,8 +48,6 @@ import com.example.game.data.repository.GamePreferencesRepository
 import com.example.game.data.repository.ShopRepository
 import com.example.game.data.repository.UserPreferences
 import com.example.game.ui.components.ShopItemCard
-import com.example.game.ui.theme.OrangeDark
-import com.example.game.ui.theme.OrangeLight
 import kotlinx.coroutines.launch
 
 @Composable
@@ -71,6 +72,7 @@ fun ShopScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -86,8 +88,8 @@ fun ShopScreen(
                 shape = CircleShape,
                 modifier = Modifier.size(50.dp),
                 contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = OrangeLight),
-                border = BorderStroke(2.dp, OrangeDark)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -102,14 +104,15 @@ fun ShopScreen(
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = OrangeDark
+                color = MaterialTheme.colorScheme.secondary
             )
 
             Row(
                 modifier = Modifier
                     .width(120.dp)
                     .height(50.dp)
-                    .border(2.dp, OrangeDark, shape = RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(12.dp)),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -123,7 +126,7 @@ fun ShopScreen(
                     text = userPrefs.coins.toString(),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = OrangeDark
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }
@@ -145,6 +148,7 @@ fun ShopScreen(
                 ShopItemCard(
                     item = shopItem,
                     countText = countText,
+                    hasEnoughCoins = userPrefs.coins >= shopItem.price,
                     onBuy = {
                         scope.launch {
                             when (shopItem.title) {
